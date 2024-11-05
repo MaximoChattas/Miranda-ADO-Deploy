@@ -20,31 +20,26 @@ stages:
   - job: BuildAndTestBack
     displayName: 'Build and Test Backend'
     steps:
-    - script: |
-        mkdir -p '$(GOBIN)'
-        echo '##vso[task.prependpath]$(GOBIN)'
-      displayName: 'Set up the Go workspace'
-      workingDirectory: '$(system.defaultWorkingDirectory)/Backend'
+    - task: GoTool@0
+      inputs:
+        version: '1.19'
+    
+    - task: Go@0
+      displayName: 'Go mod init'
+      inputs:
+        command: custom
+        customCommand: 'mod'
+        arguments: 'init project'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/Backend'
 
-    - script: |
-        ls -la $(system.defaultWorkingDirectory)/Backend
-      displayName: 'List files in the working directory'
-  
-    - script: |
-        go version
-        if [ ! -f go.mod ]; then
-            go mod init project
-        fi
-        go mod tidy
-        go mod download
-        if [ -f Gopkg.toml ]; then
-            curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-            dep ensure
-        fi
-        go build -o $(GOBIN)/golang-api -v .
-      workingDirectory: '$(system.defaultWorkingDirectory)/Backend'
-      displayName: 'Get dependencies, then build'
-
+    - task: Go@0
+      displayName: 'Go mod tidy'
+      inputs:
+        command: custom
+        customCommand: 'mod'
+        arguments: 'tidy'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/Backend'
+    
     - script: |
         go install github.com/jstemmer/go-junit-report@latest
         go test -v ./... | go-junit-report > $(system.defaultWorkingDirectory)/Backend/test-results.xml
@@ -58,13 +53,25 @@ stages:
         failTaskOnFailedTests: true
       displayName: 'Publish test results'
       condition: always()
-
-    - task: PublishBuildArtifacts@1
+    
+    - task: Go@0
+      displayName: 'Go Build'
       inputs:
-        PathtoPublish: '$(GOBIN)'
-        ArtifactName: 'go-build-output'
-        publishLocation: 'Container'
-      displayName: 'Publish build artifacts'
+        command: 'build'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/Backend'
+    
+    - task: ArchiveFiles@2
+      displayName: 'Archive files'
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/Backend'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: $(Build.ArtifactsStagingDirectory)/back-drop.zip
+    
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Build Artifacts'
+      inputs:
+        artifactName: drop
 
 - stage: DeployQA
   displayName: 'Deploy to Azure WebApp (QA)'
@@ -72,16 +79,11 @@ stages:
     - job: DeployBackQA
       displayName: 'Deploy Backend to QA'
       steps:
-      - task: DownloadBuildArtifacts@1
-        inputs:
-          buildType: 'current'
-          downloadType: 'single'
-          artifactName: 'go-build-output'
-          downloadPath: '$(System.ArtifactsDirectory)/Backend'
       - task: AzureRmWebAppDeployment@4
         inputs:
           ConnectionType: 'AzureRM'
           azureSubscription: 'Azure subscription 1(f7ecd1b3-7c3e-4cb1-9653-fc24ede1711b)'
           appType: 'webAppLinux'
           WebAppName: 'Miranda-Backend-QA'
-          packageForLinux: '$(System.ArtifactsDirectory)/Backend/golang-api'
+          packageForLinux: '$(Pipeline.Workspace)/drop/back-drop.zip'
+          RuntimeStack: 'GO|1.19'
