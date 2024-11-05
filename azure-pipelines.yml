@@ -21,7 +21,7 @@ steps:
   workingDirectory: '$(system.defaultWorkingDirectory)/Backend'
 
 - script: |
-    ls -la $(system.defaultWorkingDirectory/Backend)
+    ls -la $(system.defaultWorkingDirectory)/Backend
   displayName: 'List files in the working directory'
 
 - script: |
