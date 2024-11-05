@@ -66,13 +66,13 @@ stages:
         rootFolderOrFile: '$(System.DefaultWorkingDirectory)/Backend'
         includeRootFolder: false
         archiveType: zip
-        archiveFile: $(Build.ArtifactsStagingDirectory)/back-drop.zip
+        archiveFile: $(Build.ArtifactsStagingDirectory)/Backend/back-drop.zip
     
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Build Artifacts'
       inputs:
-        artifactName: drop
-        PathtoPublish: $(Build.ArtifactsStagingDirectory)
+        artifactName: backend-drop
+        PathtoPublish: $(Build.ArtifactsStagingDirectory)/Backend
         publishLocation: 'Container'
 
 - stage: DeployQA
@@ -81,11 +81,18 @@ stages:
     - job: DeployBackQA
       displayName: 'Deploy Backend to QA'
       steps:
+      - task: DownloadBuildArtifacts@1
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: 'backend-drop'
+          downloadPath: '$(System.ArtifactsDirectory)'
+
       - task: AzureRmWebAppDeployment@4
         inputs:
           ConnectionType: 'AzureRM'
           azureSubscription: 'Azure subscription 1(f7ecd1b3-7c3e-4cb1-9653-fc24ede1711b)'
           appType: 'webAppLinux'
           WebAppName: 'Miranda-Backend-QA'
-          packageForLinux: '$(Pipeline.Workspace)/drop/back-drop.zip'
+          packageForLinux: '$(System.ArtifactsDirectory)/backend-drop/**/*.zip'
           RuntimeStack: 'GO|1.20'
