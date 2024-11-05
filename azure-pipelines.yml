@@ -22,7 +22,7 @@ stages:
     steps:
     - task: GoTool@0
       inputs:
-        version: '1.20'
+        version: '1.18'
     
     - task: Go@0
       displayName: 'Go mod init'
