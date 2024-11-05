@@ -10,10 +10,29 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+variables:
+# Backend Directory
+  backPath: '$(System.DefaultWorkingDirectory)/Backend'
+  backDrop: 'golang-drop'
+  
+# Docker Images
+  ResourceGroupName: 'MirandaProject'
+  ConnectedServiceName: 'AzureResourceManager'
+  acrLoginServer: "$(acrName).azurecr.io"
+  acrName: 'MirandaACR'
+  backImageName: 'employee-crud-api'
+  backImageTag: 'latest'
+
 stages:
+# -------------------------------------------------------------------------------
+# |                 STAGE BUILD AND TEST FRONTEND AND BACKEND                   |
+# -------------------------------------------------------------------------------
 - stage: BuildAndTest
   displayName: 'Build And Test'
   jobs:
+# -------------------------------------------------------------------------------
+# |                        BUILD AND TEST API                                   |
+# -------------------------------------------------------------------------------
   - job: BuildAndTestBack
     displayName: 'Build and Test Backend'
     steps:
@@ -27,7 +46,7 @@ stages:
         command: custom
         customCommand: 'mod'
         arguments: 'init project'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/Backend'
+        workingDirectory: '$(backPath)'
 
     - task: Go@0
       displayName: 'Go mod tidy'
@@ -35,19 +54,20 @@ stages:
         command: custom
         customCommand: 'mod'
         arguments: 'tidy'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/Backend'
+        workingDirectory: '$(backPath)'
     
     - script: |
         go install github.com/jstemmer/go-junit-report@latest
         export PATH=$PATH:$(go env GOPATH)/bin
         go test -v ./... | go-junit-report > $(System.DefaultWorkingDirectory)/Backend/test-results.xml
-      workingDirectory: '$(System.DefaultWorkingDirectory)/Backend'
+      workingDirectory: '$(backPath)'
       displayName: 'Run tests and generate test report'
+
 
     - task: PublishTestResults@2
       inputs:
         testResultsFormat: 'JUnit'
-        testResultsFiles: '$(System.DefaultWorkingDirectory)/Backend/test-results.xml'
+        testResultsFiles: '$(backPath)/test-results.xml'
         failTaskOnFailedTests: true
       displayName: 'Publish test results'
       condition: always()
@@ -56,12 +76,12 @@ stages:
       displayName: 'Go Build'
       inputs:
         command: 'build'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/Backend'
+        workingDirectory: '$(backPath)'
     
     - task: ArchiveFiles@2
       displayName: 'Archive files'
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/Backend'
+        rootFolderOrFile: '$(backPath)'
         includeRootFolder: false
         archiveType: zip
         archiveFile: $(Build.ArtifactsStagingDirectory)/Backend/back-drop.zip
@@ -69,28 +89,67 @@ stages:
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Build Artifacts'
       inputs:
-        artifactName: backend-drop
+        artifactName: '$(backDrop)'
         PathtoPublish: $(Build.ArtifactsStagingDirectory)/Backend
         publishLocation: 'Container'
 
-# - stage: DeployQA
-#   displayName: 'Deploy to Azure WebApp (QA)'
-#   jobs:
-#     - job: DeployBackQA
-#       displayName: 'Deploy Backend to QA'
-#       steps:
-#       - task: DownloadBuildArtifacts@1
-#         inputs:
-#           buildType: 'current'
-#           downloadType: 'single'
-#           artifactName: 'backend-drop'
-#           downloadPath: '$(System.ArtifactsDirectory)'
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish API Dockerfile'
+      inputs:
+        targetPath: '$(Build.SourcesDirectory)/Dockerfile/Backend/Dockerfile'
+        artifact: 'dockerfile-back'
 
-#       - task: AzureRmWebAppDeployment@4
-#         inputs:
-#           ConnectionType: 'AzureRM'
-#           azureSubscription: 'Azure subscription 1(f7ecd1b3-7c3e-4cb1-9653-fc24ede1711b)'
-#           appType: 'webAppLinux'
-#           WebAppName: 'Miranda-Backend-QA'
-#           packageForLinux: '$(System.ArtifactsDirectory)/backend-drop/**/*.zip'
-#           RuntimeStack: 'GO|1.19'
+# -------------------------------------------------------------------------------
+# |     STAGE BUILD AND PUSH FRONTEND AND BACKEND DOCKER IMAGES TO ACR          |
+# -------------------------------------------------------------------------------
+- stage: DockerBuildAndPush
+  displayName: 'Build and Push Docker Images to ACR'
+  dependsOn: BuildAndTest
+  jobs:
+# -------------------------------------------------------------------------------
+# |                        BUILD AND PUSH API                                    |
+# -------------------------------------------------------------------------------
+    - job: docker_build_and_push_api
+      displayName: 'Build and Push API Docker Image to ACR'
+      pool:
+        vmImage: 'ubuntu-latest'
+        
+      steps:
+        - checkout: self
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download API artifacts'
+          inputs:
+            buildType: 'current'
+            artifactName: $(backDrop)
+            targetPath: '$(Pipeline.Workspace)/$(backDrop)'
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download API Dockerfile'
+          inputs:
+            buildType: 'current'
+            artifactName: 'dockerfile-back'
+            targetPath: '$(Pipeline.Workspace)/dockerfile-back'
+
+        - task: AzureCLI@2
+          displayName: 'Log in to Azure Container Registry (ACR)'
+          inputs:
+            azureSubscription: '$(ConnectedServiceName)'
+            scriptType: bash
+            scriptLocation: inlineScript
+            inlineScript: |
+              az acr login --name $(acrLoginServer)
+    
+        - task: Docker@2
+          displayName: 'Build API Docker image'
+          inputs:
+            command: build
+            repository: $(acrLoginServer)/$(backImageName)
+            dockerfile: $(Pipeline.Workspace)/dockerfile-back/dockerfile
+            buildContext: $(Pipeline.Workspace)/$(backDrop)
+            tags: '$(backImageTag)'
+
+        - task: Docker@2
+          displayName: 'Upload API Docker image to ACR'
+          inputs:
+            command: push
+            repository: $(acrLoginServer)/$(backImageName)
+            tags: 'latest'
