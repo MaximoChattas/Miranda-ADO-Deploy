@@ -77,7 +77,7 @@ stages:
           buildType: 'current'
           downloadType: 'single'
           artifactName: 'go-build-output'
-          downloadPath: '$(System.ArtifactsDirectory)/backend'
+          downloadPath: '$(System.ArtifactsDirectory)/backend/golang-api'
       - task: AzureRmWebAppDeployment@4
         inputs:
           ConnectionType: 'AzureRM'
