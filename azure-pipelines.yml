@@ -41,7 +41,7 @@ steps:
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(GOBIN)'
+    PathtoPublish: '$(system.defaultWorkingDirectory)/Backend'
     ArtifactName: 'go-build-output'
     publishLocation: 'Container'
   displayName: 'Publish build artifacts'
