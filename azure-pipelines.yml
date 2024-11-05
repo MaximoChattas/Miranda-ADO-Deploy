@@ -41,7 +41,7 @@ steps:
 
 - script: |
     go install github.com/jstemmer/go-junit-report@latest
-    go test ./... | go-junit-report > $(system.defaultWorkingDirectory)/Backend/test-results.xml
+    go test -v ./... | go-junit-report > $(system.defaultWorkingDirectory)/Backend/test-results.xml
   workingDirectory: '$(system.defaultWorkingDirectory)/Backend'
   displayName: 'Run tests and generate test report'
 
