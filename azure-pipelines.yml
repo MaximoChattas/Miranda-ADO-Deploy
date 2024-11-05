@@ -10,9 +10,6 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-variables:
-  GOBIN:  '$(system.defaultWorkingDirectory)/Backend/bin' # Go binaries path
-
 stages:
 - stage: BuildAndTest
   displayName: 'Build And Test'
@@ -40,19 +37,19 @@ stages:
         arguments: 'tidy'
         workingDirectory: '$(System.DefaultWorkingDirectory)/Backend'
     
-    # - script: |
-    #     go install github.com/jstemmer/go-junit-report@latest
-    #     go test -v ./... | go-junit-report > $(system.defaultWorkingDirectory)/Backend/test-results.xml
-    #   workingDirectory: '$(system.defaultWorkingDirectory)/Backend'
-    #   displayName: 'Run tests and generate test report'
+    - script: |
+        go install github.com/jstemmer/go-junit-report@latest
+        go test -v ./... | go-junit-report > $(system.defaultWorkingDirectory)/Backend/test-results.xml
+      workingDirectory: '$(System.DefaultWorkingDirectory)/Backend'
+      displayName: 'Run tests and generate test report'
 
-    # - task: PublishTestResults@2
-    #   inputs:
-    #     testResultsFormat: 'JUnit'
-    #     testResultsFiles: '$(system.defaultWorkingDirectory)/Backend/test-results.xml'
-    #     failTaskOnFailedTests: true
-    #   displayName: 'Publish test results'
-    #   condition: always()
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '$(System.DefaultWorkingDirectory)/Backend/test-results.xml'
+        failTaskOnFailedTests: true
+      displayName: 'Publish test results'
+      condition: always()
     
     - task: Go@0
       displayName: 'Go Build'
@@ -75,24 +72,24 @@ stages:
         PathtoPublish: $(Build.ArtifactsStagingDirectory)/Backend
         publishLocation: 'Container'
 
-- stage: DeployQA
-  displayName: 'Deploy to Azure WebApp (QA)'
-  jobs:
-    - job: DeployBackQA
-      displayName: 'Deploy Backend to QA'
-      steps:
-      - task: DownloadBuildArtifacts@1
-        inputs:
-          buildType: 'current'
-          downloadType: 'single'
-          artifactName: 'backend-drop'
-          downloadPath: '$(System.ArtifactsDirectory)'
+# - stage: DeployQA
+#   displayName: 'Deploy to Azure WebApp (QA)'
+#   jobs:
+#     - job: DeployBackQA
+#       displayName: 'Deploy Backend to QA'
+#       steps:
+#       - task: DownloadBuildArtifacts@1
+#         inputs:
+#           buildType: 'current'
+#           downloadType: 'single'
+#           artifactName: 'backend-drop'
+#           downloadPath: '$(System.ArtifactsDirectory)'
 
-      - task: AzureRmWebAppDeployment@4
-        inputs:
-          ConnectionType: 'AzureRM'
-          azureSubscription: 'Azure subscription 1(f7ecd1b3-7c3e-4cb1-9653-fc24ede1711b)'
-          appType: 'webAppLinux'
-          WebAppName: 'Miranda-Backend-QA'
-          packageForLinux: '$(System.ArtifactsDirectory)/backend-drop/**/*.zip'
-          RuntimeStack: 'GO|1.19'
+#       - task: AzureRmWebAppDeployment@4
+#         inputs:
+#           ConnectionType: 'AzureRM'
+#           azureSubscription: 'Azure subscription 1(f7ecd1b3-7c3e-4cb1-9653-fc24ede1711b)'
+#           appType: 'webAppLinux'
+#           WebAppName: 'Miranda-Backend-QA'
+#           packageForLinux: '$(System.ArtifactsDirectory)/backend-drop/**/*.zip'
+#           RuntimeStack: 'GO|1.19'
