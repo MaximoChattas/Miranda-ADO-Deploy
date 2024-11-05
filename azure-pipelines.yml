@@ -33,7 +33,7 @@ stages:
     - script: |
         go version
         if [ ! -f go.mod ]; then
-            go mod init
+            go mod init project
         fi
         go mod tidy
         go mod download
