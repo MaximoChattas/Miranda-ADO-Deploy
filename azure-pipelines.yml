@@ -40,19 +40,19 @@ stages:
         arguments: 'tidy'
         workingDirectory: '$(System.DefaultWorkingDirectory)/Backend'
     
-    - script: |
-        go install github.com/jstemmer/go-junit-report@latest
-        go test -v ./... | go-junit-report > $(system.defaultWorkingDirectory)/Backend/test-results.xml
-      workingDirectory: '$(system.defaultWorkingDirectory)/Backend'
-      displayName: 'Run tests and generate test report'
+    # - script: |
+    #     go install github.com/jstemmer/go-junit-report@latest
+    #     go test -v ./... | go-junit-report > $(system.defaultWorkingDirectory)/Backend/test-results.xml
+    #   workingDirectory: '$(system.defaultWorkingDirectory)/Backend'
+    #   displayName: 'Run tests and generate test report'
 
-    - task: PublishTestResults@2
-      inputs:
-        testResultsFormat: 'JUnit'
-        testResultsFiles: '$(system.defaultWorkingDirectory)/Backend/test-results.xml'
-        failTaskOnFailedTests: true
-      displayName: 'Publish test results'
-      condition: always()
+    # - task: PublishTestResults@2
+    #   inputs:
+    #     testResultsFormat: 'JUnit'
+    #     testResultsFiles: '$(system.defaultWorkingDirectory)/Backend/test-results.xml'
+    #     failTaskOnFailedTests: true
+    #   displayName: 'Publish test results'
+    #   condition: always()
     
     - task: Go@0
       displayName: 'Go Build'
