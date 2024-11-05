@@ -122,6 +122,7 @@ stages:
             buildType: 'current'
             artifactName: $(backDrop)
             targetPath: '$(Pipeline.Workspace)/$(backDrop)'
+
         - task: DownloadPipelineArtifact@2
           displayName: 'Download API Dockerfile'
           inputs:
@@ -143,7 +144,7 @@ stages:
           inputs:
             command: build
             repository: $(acrLoginServer)/$(backImageName)
-            dockerfile: $(Pipeline.Workspace)/dockerfile-back/dockerfile
+            dockerfile: $(Pipeline.Workspace)/dockerfile-back/Dockerfile
             buildContext: $(Pipeline.Workspace)/$(backDrop)
             tags: '$(backImageTag)'
 
