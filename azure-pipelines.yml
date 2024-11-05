@@ -41,7 +41,7 @@ stages:
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             dep ensure
         fi
-        go build -v .
+        go build -o $(GOBIN)/golang-api -v .
       workingDirectory: '$(system.defaultWorkingDirectory)/Backend'
       displayName: 'Get dependencies, then build'
 
@@ -61,8 +61,27 @@ stages:
 
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: '$(system.defaultWorkingDirectory)/Backend'
+        PathtoPublish: '$GOBIN'
         ArtifactName: 'go-build-output'
         publishLocation: 'Container'
       displayName: 'Publish build artifacts'
 
+- stage: DeployQA
+  displayName: 'Deploy to Azure WebApp (QA)'
+  jobs:
+    - job: DeployBackQA
+      displayName: 'Deploy Backend to QA'
+      steps:
+      - task: DownloadBuildArtifacts@1
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: 'go-build-output'
+          downloadPath: '$(System.ArtifactsDirectory)/backend'
+      - task: AzureRmWebAppDeployment@4
+        inputs:
+          ConnectionType: 'AzureRM'
+          azureSubscription: 'Azure subscription 1(f7ecd1b3-7c3e-4cb1-9653-fc24ede1711b)'
+          appType: 'webAppLinux'
+          WebAppName: 'Miranda-Backend-QA'
+          packageForLinux: '$(System.ArtifactsDirectory)/Backend/golang-api'
