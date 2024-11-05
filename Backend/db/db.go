@@ -1,6 +1,7 @@
 package db
 
 import (
+	"os"
 	"project/client"
 	"project/model"
 
@@ -16,12 +17,12 @@ var (
 
 func init() {
 	// DB Connections Paramters
-	DBName := "miranda"
-	DBUser := "root"
-	DBPass := "pass"
-	DBHost := "database"
+	DBName := os.Getenv("DBNAME")
+	DBUser := os.Getenv("DBUSER")
+	DBPass := os.Getenv("DBPASSWORD")
+	DBHost := os.Getenv("DBHOST")
 
-	Db, err = gorm.Open("mysql", DBUser+":"+DBPass+"@tcp("+DBHost+":3307)/"+DBName+"?charset=utf8&parseTime=True")
+	Db, err = gorm.Open("mysql", DBUser+":"+DBPass+"@tcp("+DBHost+":3306)/"+DBName+"?charset=utf8&parseTime=True")
 
 	if err != nil {
 		log.Info("Connection Failed to Open")
