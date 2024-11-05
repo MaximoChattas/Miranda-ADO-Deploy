@@ -39,6 +39,19 @@ steps:
   workingDirectory: '$(system.defaultWorkingDirectory)/Backend'
   displayName: 'Get dependencies, then build'
 
+- script: |
+    go install github.com/jstemmer/go-junit-report@latest
+    go test ./... | go-junit-report > $(system.defaultWorkingDirectory)/Backend/test-results.xml
+  workingDirectory: '$(system.defaultWorkingDirectory)/Backend'
+  displayName: 'Run tests and generate test report'
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '$(system.defaultWorkingDirectory)/Backend/test-results.xml'
+    failTaskOnFailedTests: true
+  displayName: 'Publish test results'
+
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(system.defaultWorkingDirectory)/Backend'
