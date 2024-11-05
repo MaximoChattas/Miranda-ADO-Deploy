@@ -61,7 +61,7 @@ stages:
 
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: '$GOBIN'
+        PathtoPublish: '$(GOBIN)'
         ArtifactName: 'go-build-output'
         publishLocation: 'Container'
       displayName: 'Publish build artifacts'
