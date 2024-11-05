@@ -1,6 +1,6 @@
 FROM golang:latest
 
-ADD ./back-drop /backend
+ADD ./golang-drop /backend
 
 WORKDIR /backend
 RUN go mod init project
