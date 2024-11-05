@@ -72,6 +72,8 @@ stages:
       displayName: 'Publish Build Artifacts'
       inputs:
         artifactName: drop
+        PathtoPublish: $(Build.ArtifactsStagingDirectory)
+        publishLocation: 'Container'
 
 - stage: DeployQA
   displayName: 'Deploy to Azure WebApp (QA)'
