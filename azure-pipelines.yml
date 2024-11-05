@@ -138,6 +138,9 @@ stages:
             scriptLocation: inlineScript
             inlineScript: |
               az acr login --name $(acrLoginServer)
+        
+        - script: ls -lR
+          workingDirectory: $(Pipeline.Workspace)/$(backDrop)
     
         - task: Docker@2
           displayName: 'Build API Docker image'
