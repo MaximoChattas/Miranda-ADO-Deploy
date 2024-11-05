@@ -39,7 +39,8 @@ stages:
     
     - script: |
         go install github.com/jstemmer/go-junit-report@latest
-        go test -v ./... | go-junit-report > $(system.defaultWorkingDirectory)/Backend/test-results.xml
+        export PATH=$PATH:$(go env GOPATH)/bin
+        go test -v ./... | go-junit-report > $(System.DefaultWorkingDirectory)/Backend/test-results.xml
       workingDirectory: '$(System.DefaultWorkingDirectory)/Backend'
       displayName: 'Run tests and generate test report'
 
