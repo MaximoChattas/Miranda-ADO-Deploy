@@ -12,20 +12,22 @@ import (
 )
 
 func TestInsertHotel(t *testing.T) {
-	db, mock, err := sqlmock.New()
+	a := assert.New(t)
+
+	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	if err != nil {
-		t.Fatalf("Failed to Create Mock Database")
+		t.Fatalf("Failed to create mock database")
 	}
 	defer db.Close()
 
 	gormDB, err := gorm.Open(sqlserver.New(sqlserver.Config{
 		DriverName: "sqlserver",
-		Conn:       db, // Use the mocked *sql.DB connection
+		Conn:       db,
 	}), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info), // Silence GORM logs for tests
+		Logger: logger.Default.LogMode(logger.Info),
 	})
 	if err != nil {
-		t.Fatalf("Connection Failed to Open")
+		t.Fatalf("Connection failed to open")
 	}
 
 	Db = gormDB
@@ -42,18 +44,17 @@ func TestInsertHotel(t *testing.T) {
 	}
 
 	mock.ExpectBegin()
-	mock.ExpectExec(`SET IDENTITY_INSERT "hotels" ON;INSERT INTO "hotels" $begin:math:text$"name", "room_amount", "description", "street_name", "street_number", "rate", "id"$end:math:text$ OUTPUT INSERTED\."id" VALUES $begin:math:text$\\?, \\?, \\?, \\?, \\?, \\?$end:math:text$;SET IDENTITY_INSERT "hotels" OFF`).
-		WithArgs(hotel.Name, hotel.RoomAmount, hotel.Description, hotel.StreetName, hotel.StreetNumber, hotel.Rate).
-		WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectQuery(`SET IDENTITY_INSERT "hotels" ON;INSERT INTO "hotels" ("name","room_amount","description","street_name","street_number","rate","id") OUTPUT INSERTED."id" VALUES (@p1,@p2,@p3,@p4,@p5,@p6,@p7);SET IDENTITY_INSERT "hotels" OFF;`).
+		WithArgs(hotel.Name, hotel.RoomAmount, hotel.Description, hotel.StreetName, hotel.StreetNumber, hotel.Rate, hotel.Id).
+		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 	mock.ExpectCommit()
 
 	result := HotelClient.InsertHotel(hotel)
 
-	// Assert the result
-	assert.Equal(t, hotel, result)
-	assert.Equal(t, 1, hotel.Id)
+	a.Equal(hotel, result)
+	a.Equal(1, hotel.Id)
 
-	// Assert that all expectations were met
+	// Check that all expectations were met
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("There were unfulfilled expectations: %v", err)
 	}
