@@ -122,6 +122,12 @@ stages:
             buildType: 'current'
             artifactName: $(backDrop)
             targetPath: '$(Pipeline.Workspace)/$(backDrop)'
+        
+        - task: ExtractFiles@1
+          displayName: 'Unzip API artifacts'
+          inputs:
+            archiveFilePatterns: '$(Pipeline.Workspace)/$(backDrop)/*.zip'
+            destinationFolder: '$(Pipeline.Workspace)/Go-API'
 
         - task: DownloadPipelineArtifact@2
           displayName: 'Download API Dockerfile'
@@ -148,7 +154,7 @@ stages:
             command: build
             repository: $(acrLoginServer)/$(backImageName)
             dockerfile: $(Pipeline.Workspace)/dockerfile-back/Dockerfile
-            buildContext: $(Pipeline.Workspace)/$(backDrop)
+            buildContext: '$(Pipeline.Workspace)/Go-API'
             tags: '$(backImageTag)'
 
         - task: Docker@2
