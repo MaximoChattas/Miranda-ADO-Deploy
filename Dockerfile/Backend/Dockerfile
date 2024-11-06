@@ -3,10 +3,8 @@ FROM golang:latest
 ADD . /backend
 
 WORKDIR /backend
-RUN go mod init project
-RUN go mod tidy
-RUN go build -o project .
-RUN go test ./...
 RUN chmod +x /backend
+EXPOSE 80
+EXPOSE 443
 
 ENTRYPOINT ["/backend/project"]
