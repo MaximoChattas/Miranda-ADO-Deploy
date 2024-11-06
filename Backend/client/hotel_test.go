@@ -1,12 +1,14 @@
 package client
 
 import (
+	"gorm.io/driver/sqlserver"
+	"gorm.io/gorm/logger"
 	"project/model"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 )
 
 func TestInsertHotel(t *testing.T) {
@@ -16,7 +18,12 @@ func TestInsertHotel(t *testing.T) {
 	}
 	defer db.Close()
 
-	gormDB, err := gorm.Open("mysql", db)
+	gormDB, err := gorm.Open(sqlserver.New(sqlserver.Config{
+		DriverName: "sqlserver",
+		Conn:       db, // Use the mocked *sql.DB connection
+	}), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info), // Silence GORM logs for tests
+	})
 	if err != nil {
 		t.Fatalf("Connection Failed to Open")
 	}
@@ -35,7 +42,9 @@ func TestInsertHotel(t *testing.T) {
 	}
 
 	mock.ExpectBegin()
-	mock.ExpectExec("INSERT INTO `hotels`").WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectExec(`SET IDENTITY_INSERT "hotels" ON;INSERT INTO "hotels" $begin:math:text$"name", "room_amount", "description", "street_name", "street_number", "rate", "id"$end:math:text$ OUTPUT INSERTED\."id" VALUES $begin:math:text$\\?, \\?, \\?, \\?, \\?, \\?$end:math:text$;SET IDENTITY_INSERT "hotels" OFF`).
+		WithArgs(hotel.Name, hotel.RoomAmount, hotel.Description, hotel.StreetName, hotel.StreetNumber, hotel.Rate).
+		WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
 
 	result := HotelClient.InsertHotel(hotel)
