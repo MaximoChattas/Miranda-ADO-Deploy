@@ -3,8 +3,8 @@ package client
 import (
 	"project/model"
 
-	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 )
 
 var Db *gorm.DB
