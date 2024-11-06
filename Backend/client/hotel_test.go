@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func TestInsertHotel(t *testing.T) {
+func TestInsertHotel_Client(t *testing.T) {
 	a := assert.New(t)
 
 	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
@@ -60,7 +60,7 @@ func TestInsertHotel(t *testing.T) {
 	}
 }
 
-func TestGetHotelById(t *testing.T) {
+func TestGetHotelById_Client(t *testing.T) {
 	a := assert.New(t)
 
 	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
@@ -108,7 +108,7 @@ func TestGetHotelById(t *testing.T) {
 	}
 }
 
-func TestGetHotels(t *testing.T) {
+func TestGetHotels_Client(t *testing.T) {
 	a := assert.New(t)
 
 	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
@@ -167,7 +167,7 @@ func TestGetHotels(t *testing.T) {
 	}
 }
 
-func TestDeleteHotel(t *testing.T) {
+func TestDeleteHotel_Client(t *testing.T) {
 	a := assert.New(t)
 
 	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
@@ -214,7 +214,7 @@ func TestDeleteHotel(t *testing.T) {
 	}
 }
 
-func TestUpdateHotel(t *testing.T) {
+func TestUpdateHotel_Client(t *testing.T) {
 	a := assert.New(t)
 
 	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
