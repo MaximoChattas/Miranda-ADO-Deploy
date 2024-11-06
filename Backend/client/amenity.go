@@ -5,23 +5,7 @@ import (
 	"project/model"
 )
 
-type amenityClient struct{}
-
-type amenityClientInterface interface {
-	InsertAmenity(amenity model.Amenity) model.Amenity
-	GetAmenityById(id int) model.Amenity
-	GetAmenityByName(name string) model.Amenity
-	GetAmenities() model.Amenities
-	//DeleteAmenityById(id string) error
-}
-
-var AmenityClient amenityClientInterface
-
-func init() {
-	AmenityClient = &amenityClient{}
-}
-
-func (c amenityClient) InsertAmenity(amenity model.Amenity) model.Amenity {
+func InsertAmenity(amenity model.Amenity) model.Amenity {
 
 	result := Db.Create(&amenity)
 
@@ -34,7 +18,7 @@ func (c amenityClient) InsertAmenity(amenity model.Amenity) model.Amenity {
 	return amenity
 }
 
-func (c amenityClient) GetAmenityById(id int) model.Amenity {
+func GetAmenityById(id int) model.Amenity {
 	var amenity model.Amenity
 
 	Db.Where("id = ?", id).First(&amenity)
@@ -43,7 +27,7 @@ func (c amenityClient) GetAmenityById(id int) model.Amenity {
 	return amenity
 }
 
-func (c amenityClient) GetAmenityByName(name string) model.Amenity {
+func GetAmenityByName(name string) model.Amenity {
 	var amenity model.Amenity
 
 	Db.Where("name = ?", name).First(&amenity)
@@ -52,7 +36,7 @@ func (c amenityClient) GetAmenityByName(name string) model.Amenity {
 	return amenity
 }
 
-func (c amenityClient) GetAmenities() model.Amenities {
+func GetAmenities() model.Amenities {
 	var amenities model.Amenities
 	Db.Find(&amenities)
 

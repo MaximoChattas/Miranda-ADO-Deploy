@@ -25,7 +25,7 @@ func (s *amenityService) InsertAmenity(amenityDto dto.AmenityDto) (dto.AmenityDt
 
 	amenity.Name = amenityDto.Name
 
-	amenity = client.AmenityClient.InsertAmenity(amenity)
+	amenity = client.InsertAmenity(amenity)
 
 	if amenity.Id == 0 {
 		return amenityDto, errors.New("error creating amenity")
@@ -37,7 +37,7 @@ func (s *amenityService) InsertAmenity(amenityDto dto.AmenityDto) (dto.AmenityDt
 }
 
 func (s *amenityService) GetAmenities() (dto.AmenitiesDto, error) {
-	var amenities model.Amenities = client.AmenityClient.GetAmenities()
+	var amenities model.Amenities = client.GetAmenities()
 	var amenitiesDto dto.AmenitiesDto
 
 	for _, amenity := range amenities {
