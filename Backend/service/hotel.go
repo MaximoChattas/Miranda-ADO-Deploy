@@ -37,7 +37,7 @@ func (s *hotelService) InsertHotel(hotelDto dto.HotelDto) (dto.HotelDto, error) 
 	hotel.Rate = hotelDto.Rate
 
 	for _, amenityName := range hotelDto.Amenities {
-		amenity := client.GetAmenityByName(amenityName)
+		amenity := client.AmenityClient.GetAmenityByName(amenityName)
 
 		if amenity.Id == 0 {
 			return hotelDto, errors.New("amenity not found")
@@ -217,7 +217,7 @@ func (s *hotelService) UpdateHotel(hotelDto dto.HotelDto) (dto.HotelDto, error) 
 	hotel.Amenities = model.Amenities{}
 
 	for _, amenityName := range hotelDto.Amenities {
-		amenity := client.GetAmenityByName(amenityName)
+		amenity := client.AmenityClient.GetAmenityByName(amenityName)
 
 		if amenity.Id == 0 {
 			return hotelDto, errors.New("amenity not found")
