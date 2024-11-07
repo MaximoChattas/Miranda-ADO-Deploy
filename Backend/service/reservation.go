@@ -61,7 +61,7 @@ func (s *reservationService) InsertReservation(reservationDto dto.ReservationDto
 
 		reservation.Amount = rate * nightsAmount
 
-		reservation = client.InsertReservation(reservation)
+		reservation = client.ReservationClient.InsertReservation(reservation)
 
 		reservationDto.Id = reservation.Id
 		reservationDto.Amount = reservation.Amount
@@ -76,7 +76,7 @@ func (s *reservationService) GetReservationById(id int) (dto.ReservationDto, err
 	var reservation model.Reservation
 	var reservationDto dto.ReservationDto
 
-	reservation = client.GetReservationById(id)
+	reservation = client.ReservationClient.GetReservationById(id)
 
 	if reservation.Id == 0 {
 		return reservationDto, errors.New("reservation not found")
@@ -94,7 +94,7 @@ func (s *reservationService) GetReservationById(id int) (dto.ReservationDto, err
 
 func (s *reservationService) GetReservations() (dto.ReservationsDto, error) {
 
-	var reservations model.Reservations = client.GetReservations()
+	var reservations model.Reservations = client.ReservationClient.GetReservations()
 	var reservationsDto dto.ReservationsDto
 
 	for _, reservation := range reservations {
@@ -121,7 +121,7 @@ func (s *reservationService) GetReservationsByUser(userId int) (dto.UserReservat
 	if user.Id == 0 {
 		return userReservationsDto, errors.New("user not found")
 	}
-	var reservations model.Reservations = client.GetReservationsByUser(userId)
+	var reservations model.Reservations = client.ReservationClient.GetReservationsByUser(userId)
 
 	userReservationsDto.UserId = user.Id
 	userReservationsDto.UserName = user.Name
@@ -159,7 +159,7 @@ func (s *reservationService) GetReservationsByUserRange(userId int, startDate st
 		return reservationsInRange, errors.New("a reservation cant end before it starts")
 	}
 
-	reservations := client.GetReservationsByUser(userId)
+	reservations := client.ReservationClient.GetReservationsByUser(userId)
 
 	for _, reservation := range reservations {
 
@@ -197,7 +197,7 @@ func (s *reservationService) GetReservationsByHotel(hotelId int) (dto.HotelReser
 		return hotelReservations, errors.New("hotel not found")
 	}
 
-	var reservations model.Reservations = client.GetReservationsByHotel(hotelId)
+	var reservations model.Reservations = client.ReservationClient.GetReservationsByHotel(hotelId)
 
 	hotelReservations.HotelId = hotel.Id
 	hotelReservations.HotelName = hotel.Name
@@ -226,7 +226,7 @@ func (s *reservationService) GetReservationsByHotel(hotelId int) (dto.HotelReser
 
 func (s *reservationService) DeleteReservation(id int) error {
 
-	reservation := client.GetReservationById(id)
+	reservation := client.ReservationClient.GetReservationById(id)
 
 	if reservation.Id == 0 {
 		return errors.New("reservation not found")
@@ -238,7 +238,7 @@ func (s *reservationService) DeleteReservation(id int) error {
 		return errors.New("can't delete a reservation 48hs before it starts")
 	}
 
-	err := client.DeleteReservation(reservation)
+	err := client.ReservationClient.DeleteReservation(reservation)
 
 	return err
 

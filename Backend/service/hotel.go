@@ -123,7 +123,7 @@ func (s *hotelService) GetHotelById(id int) (dto.HotelDto, error) {
 func (s *hotelService) CheckAvailability(hotelId int, startDate time.Time, endDate time.Time) bool {
 
 	hotel := client.HotelClient.GetHotelById(hotelId)
-	reservations := client.GetReservationsByHotel(hotelId)
+	reservations := client.ReservationClient.GetReservationsByHotel(hotelId)
 
 	roomsAvailable := hotel.RoomAmount
 
