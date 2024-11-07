@@ -5,7 +5,23 @@ import (
 	"project/model"
 )
 
-func InsertImage(image model.Image) model.Image {
+type imageClient struct{}
+
+type imageClientInterface interface {
+	InsertImage(image model.Image) model.Image
+	InsertImages(images model.Images) model.Images
+	GetImageById(id int) model.Image
+	GetImages() model.Images
+	GetImagesByHotelId(hotelId int) model.Images
+}
+
+var ImageClient imageClientInterface
+
+func init() {
+	ImageClient = &imageClient{}
+}
+
+func (c imageClient) InsertImage(image model.Image) model.Image {
 
 	result := Db.Create(&image)
 
@@ -18,7 +34,7 @@ func InsertImage(image model.Image) model.Image {
 	return image
 }
 
-func InsertImages(images model.Images) model.Images {
+func (c imageClient) InsertImages(images model.Images) model.Images {
 
 	for i := range images {
 		result := Db.Create(&images[i])
@@ -35,7 +51,7 @@ func InsertImages(images model.Images) model.Images {
 	return images
 }
 
-func GetImageById(id int) model.Image {
+func (c imageClient) GetImageById(id int) model.Image {
 	var image model.Image
 
 	Db.Where("id = ?", id).First(&image)
@@ -44,7 +60,7 @@ func GetImageById(id int) model.Image {
 	return image
 }
 
-func GetImages() model.Images {
+func (c imageClient) GetImages() model.Images {
 	var images model.Images
 	Db.Find(&images)
 
@@ -53,7 +69,7 @@ func GetImages() model.Images {
 	return images
 }
 
-func GetImagesByHotelId(hotelId int) model.Images {
+func (c imageClient) GetImagesByHotelId(hotelId int) model.Images {
 	var images model.Images
 
 	Db.Where("hotel_id = ?", hotelId).Find(&images)

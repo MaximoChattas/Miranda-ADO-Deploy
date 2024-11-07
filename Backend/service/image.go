@@ -33,7 +33,7 @@ func (s *imageService) InsertImages(imagesDto dto.ImagesDto) (dto.ImagesDto, err
 		images = append(images, image)
 	}
 
-	images = client.InsertImages(images)
+	images = client.ImageClient.InsertImages(images)
 
 	if len(images) != len(imagesDto) {
 		return imagesDto, errors.New("failed to insert images")
@@ -54,7 +54,7 @@ func (s *imageService) GetImageById(id int) (dto.ImageDto, error) {
 	var image model.Image
 	var imageDto dto.ImageDto
 
-	image = client.GetImageById(id)
+	image = client.ImageClient.GetImageById(id)
 
 	if image.Id == 0 {
 		return imageDto, errors.New("image not found")
