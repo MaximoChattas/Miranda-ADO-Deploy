@@ -255,7 +255,7 @@ stages:
               az acr login --name $(acrLoginServer)
         
         - script: ls -lR
-          workingDirectory: $(Pipeline.Workspace)/$(frontDrop)
+          workingDirectory: $(Pipeline.Workspace)/React-APP
     
         - task: Docker@2
           displayName: 'Build Front Docker image'
