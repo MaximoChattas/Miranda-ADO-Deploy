@@ -26,6 +26,8 @@ variables:
   acrName: 'MirandaACR'
   backImageName: 'employee-crud-api'
   backImageTag: 'latest'
+  frontImageName: 'miranda-react-app'
+  frontImageTag: 'latest'
 
 # Azure App Services
   AppServicePlanLinux: 'MirandaASP'
@@ -210,6 +212,64 @@ stages:
           inputs:
             command: push
             repository: $(acrLoginServer)/$(backImageName)
+            tags: 'latest'
+
+# -------------------------------------------------------------------------------
+# |                        BUILD AND PUSH FRONT                                 |
+# -------------------------------------------------------------------------------
+    - job: docker_build_and_push_front
+      displayName: 'Build and Push Front Docker Image to ACR'
+      pool:
+        vmImage: 'ubuntu-latest'
+        
+      steps:
+        - checkout: self
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download Front artifacts'
+          inputs:
+            buildType: 'current'
+            artifactName: $(frontDrop)
+            targetPath: '$(Pipeline.Workspace)/$(frontDrop)'
+        
+        - task: ExtractFiles@1
+          displayName: 'Unzip Front artifacts'
+          inputs:
+            archiveFilePatterns: '$(Pipeline.Workspace)/$(frontDrop)/*.zip'
+            destinationFolder: '$(Pipeline.Workspace)/React-APP'
+
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download Front Dockerfile'
+          inputs:
+            buildType: 'current'
+            artifactName: 'dockerfile-front'
+            targetPath: '$(Pipeline.Workspace)/dockerfile-front'
+
+        - task: AzureCLI@2
+          displayName: 'Log in to Azure Container Registry (ACR)'
+          inputs:
+            azureSubscription: '$(ConnectedServiceName)'
+            scriptType: bash
+            scriptLocation: inlineScript
+            inlineScript: |
+              az acr login --name $(acrLoginServer)
+        
+        - script: ls -lR
+          workingDirectory: $(Pipeline.Workspace)/$(frontDrop)
+    
+        - task: Docker@2
+          displayName: 'Build Front Docker image'
+          inputs:
+            command: build
+            repository: $(acrLoginServer)/$(frontImageName)
+            dockerfile: $(Pipeline.Workspace)/dockerfile-front/Dockerfile
+            buildContext: '$(Pipeline.Workspace)/React-APP'
+            tags: '$(frontImageTag)'
+
+        - task: Docker@2
+          displayName: 'Upload API Docker image to ACR'
+          inputs:
+            command: push
+            repository: $(acrLoginServer)/$(frontImageName)
             tags: 'latest'
 
 # -------------------------------------------------------------------------------
