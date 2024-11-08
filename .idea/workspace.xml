@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8094b6c0-0600-40bc-89d9-f6442fd856e8" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Backend/client/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/client/user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/client/user_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/client/user_test.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
