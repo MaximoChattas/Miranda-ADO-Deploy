@@ -14,6 +14,10 @@ variables:
 # Backend Directory
   backPath: '$(System.DefaultWorkingDirectory)/Backend'
   backDrop: 'golang-drop'
+
+# Frontend Directory
+  frontPath: '$(System.DefaultWorkingDirectory)/Frontend'
+  frontDrop: 'react-drop'
   
 # Docker Images
   ResourceGroupName: 'MirandaProject'
@@ -44,6 +48,7 @@ stages:
     - task: GoTool@0
       inputs:
         version: '1.20'
+      displayName: 'Set Go version'
     
     - task: Go@0
       displayName: 'Go mod init'
@@ -66,7 +71,7 @@ stages:
         export PATH=$PATH:$(go env GOPATH)/bin
         go test -v ./... | go-junit-report > $(System.DefaultWorkingDirectory)/Backend/test-results.xml
       workingDirectory: '$(backPath)'
-      displayName: 'Run tests and generate test report'
+      displayName: 'Run backend tests and generate test report'
 
 
     - task: PublishTestResults@2
@@ -74,7 +79,7 @@ stages:
         testResultsFormat: 'JUnit'
         testResultsFiles: '$(backPath)/test-results.xml'
         failTaskOnFailedTests: true
-      displayName: 'Publish test results'
+      displayName: 'Publish backend test results'
       condition: always()
     
     - task: Go@0
@@ -84,7 +89,7 @@ stages:
         workingDirectory: '$(backPath)'
     
     - task: ArchiveFiles@2
-      displayName: 'Archive files'
+      displayName: 'Archive API files'
       inputs:
         rootFolderOrFile: '$(backPath)'
         includeRootFolder: false
@@ -92,7 +97,7 @@ stages:
         archiveFile: $(Build.ArtifactsStagingDirectory)/Backend/back-drop.zip
     
     - task: PublishBuildArtifacts@1
-      displayName: 'Publish Build Artifacts'
+      displayName: 'Publish API Build Artifacts'
       inputs:
         artifactName: '$(backDrop)'
         PathtoPublish: $(Build.ArtifactsStagingDirectory)/Backend
@@ -103,6 +108,44 @@ stages:
       inputs:
         targetPath: '$(Build.SourcesDirectory)/Dockerfile/Backend/Dockerfile'
         artifact: 'dockerfile-back'
+
+# -------------------------------------------------------------------------------
+# |                        BUILD AND TEST FRONT                                 |
+# -------------------------------------------------------------------------------
+  - job: BuildAndTestFront
+    displayName: 'Build And Test Frontend'
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '20.x'
+      displayName: 'Install Node.js'
+
+    - script: |
+        npm install
+        npm run build
+      workingDirectory: '$(frontPath)'
+      displayName: 'Install dependencies and build React App'
+    
+    - task: ArchiveFiles@2
+      displayName: 'Archive files'
+      inputs:
+        rootFolderOrFile: '$(frontPath)'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: $(Build.ArtifactsStagingDirectory)/Frontend/front-drop.zip
+    
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Frontend Build Artifacts'
+      inputs:
+        artifactName: '$(frontDrop)'
+        PathtoPublish: $(Build.ArtifactsStagingDirectory)/Frontend
+        publishLocation: 'Container'
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Frontend Dockerfile'
+      inputs:
+        targetPath: '$(Build.SourcesDirectory)/Dockerfile/Frontend/Dockerfile'
+        artifact: 'dockerfile-front'
 
 # -------------------------------------------------------------------------------
 # |     STAGE BUILD AND PUSH FRONTEND AND BACKEND DOCKER IMAGES TO ACR          |
