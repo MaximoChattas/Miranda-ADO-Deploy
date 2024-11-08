@@ -125,6 +125,7 @@ stages:
 
     - script: |
         npm install
+        npm install cli-js -g
         npm run build
       workingDirectory: '$(frontPath)'
       displayName: 'Install dependencies and build React App'
