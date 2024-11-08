@@ -16,21 +16,6 @@ var (
 )
 
 func init() {
-	// DB Connections Paramters
-	//DBName := os.Getenv("DBNAME")
-	//DBUser := os.Getenv("DBUSER")
-	//DBPass := os.Getenv("DBPASSWORD")
-	//DBHost := os.Getenv("DBHOST")
-
-	//Db, err = gorm.Open("mysql", DBUser+":"+DBPass+"@tcp("+DBHost+":3306)/"+DBName+"?charset=utf8&parseTime=True")
-
-	//var server = "chattas-miranda.database.windows.net"
-	//var port = "1433"
-	//var user = "sqladmin"
-	//var password = "Maximo123"
-	//var database = "MirandaDB"
-	//
-	//dsn := "sqlserver://" + user + ":" + password + "@" + server + ":" + port + "?database=" + database
 
 	dsn := os.Getenv("DBCONNSTRING")
 
