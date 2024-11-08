@@ -19,6 +19,8 @@ func init() {
 
 	dsn := os.Getenv("DBCONNSTRING")
 
+	log.Info(dsn)
+
 	Db, err = gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
 
 	if err != nil {
