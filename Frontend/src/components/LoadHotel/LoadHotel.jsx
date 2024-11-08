@@ -25,6 +25,8 @@ function LoadHotel() {
 
     const navigate = useNavigate();
 
+    const baseURL = 'https://chattas-backend-qa.azurewebsites.net'
+
     const handleLoadHotel = async (e) => {
         e.preventDefault();
         setError('');
@@ -34,7 +36,7 @@ function LoadHotel() {
                 throw new Error('Complete todos los campos requeridos');
             }
 
-            const response = await fetch('http://localhost:8090/hotel', {
+            const response = await fetch(`${baseURL}/hotel`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -75,7 +77,7 @@ function LoadHotel() {
                 formData.append('images', image);
             });
 
-            const response = await fetch(`http://localhost:8090/hotel/${hotelId}/images`, {
+            const response = await fetch(`${baseURL}/hotel/${hotelId}/images`, {
                 method: 'POST',
                 body: formData,
             });
@@ -103,7 +105,7 @@ function LoadHotel() {
     useEffect(() => {
         const fetchAmenities = async () => {
             try {
-                const response = await fetch('http://localhost:8090/amenity');
+                const response = await fetch(`${baseURL}/amenity`);
                 if (response.ok) {
                     const data = await response.json();
                     setAmenities(data);

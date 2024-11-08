@@ -13,15 +13,17 @@ const UserReservations = () => {
   const { userProfile } = useContext(UserProfileContext);
   const { loggedIn } = useContext(LoginContext);
 
+  const baseURL = 'https://chattas-backend-qa.azurewebsites.net'
+
   useEffect(() => {
     const fetchUserReservations = async () => {
       try {
-        const response = await fetch(`http://localhost:8090/user/reservations/${id}`);
+        const response = await fetch(`${baseURL}/user/reservations/${id}`);
         if (response.ok) {
           const data = await response.json();
           setUserReservations(data);
 
-          const hotelResponse = await fetch(`http://localhost:8090/hotel`);
+          const hotelResponse = await fetch(`${baseURL}/hotel`);
             if (hotelResponse.ok) {
             const hotelData = await hotelResponse.json();
             setHotels(hotelData);

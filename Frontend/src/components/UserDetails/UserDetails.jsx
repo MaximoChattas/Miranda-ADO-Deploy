@@ -13,10 +13,12 @@ const UserDetails = () => {
   const { userProfile } = useContext(UserProfileContext);
   const navigate = useNavigate()
 
+  const baseURL = 'https://chattas-backend-qa.azurewebsites.net'
+
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:8090/user/${id}`);
+        const response = await fetch(`${baseURL}/user/${id}`);
         if (response.ok) {
           const data = await response.json();
           setUser(data);

@@ -13,6 +13,8 @@ function Signup() {
 
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  const baseURL = 'https://chattas-backend-qa.azurewebsites.net'
   
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -25,7 +27,7 @@ function Signup() {
         throw new Error('Complete todos los campos requeridos')
       }
 
-      const response = await fetch('http://localhost:8090/user', {
+      const response = await fetch(`${baseURL}/user`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

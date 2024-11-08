@@ -11,15 +11,17 @@ const AdminHotelReservations = () => {
   const { userProfile } = useContext(UserProfileContext);
   const { loggedIn } = useContext(LoginContext);
 
+  const baseURL = 'https://chattas-backend-qa.azurewebsites.net'
+
   useEffect(() => {
     const fetchHotelReservations = async () => {
       try {
-        const response = await fetch(`http://localhost:8090/reservation`);
+        const response = await fetch(`${baseURL}/reservation`);
         if (response.ok) {
           const data = await response.json();
           setHotelReservations({ reservations: data });
 
-          const hotelResponse = await fetch(`http://localhost:8090/hotel`);
+          const hotelResponse = await fetch(`${baseURL}/hotel`);
           if (hotelResponse.ok) {
             const hotelData = await hotelResponse.json();
             setHotels(hotelData);

@@ -9,10 +9,12 @@ const HotelList = () => {
   const [error, setError] = useState(null);
   const { loggedIn } = useContext(LoginContext)
 
+  const baseURL = 'https://chattas-backend-qa.azurewebsites.net'
+
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        const response = await fetch("http://localhost:8090/hotel");
+        const response = await fetch(`${baseURL}/hotel`);
         if (response.ok) {
           const data = await response.json();
           setHotels(data);
@@ -58,7 +60,7 @@ const HotelList = () => {
           <div key={hotel.id} className="col-md-4 mb-4">
             <div className="card">
                 {hotel.images &&
-                    <img className="card-img-top" alt={`Image for ${hotel.name}`} src={`http://localhost:8090/image/${hotel.images[0].id}`}/>}
+                    <img className="card-img-top" alt={`Image for ${hotel.name}`} src={`${baseURL}/image/${hotel.images[0].id}`}/>}
               <div className="card-body">
                 <h5 className="card-title">
                     <Link to={`/hotel/${hotel.id}`}>

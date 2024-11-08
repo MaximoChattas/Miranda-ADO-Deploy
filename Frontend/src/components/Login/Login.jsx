@@ -15,6 +15,8 @@ function Login() {
   const { loggedIn, setLoggedIn } = useContext(LoginContext);
   const { userProfile, setUserProfile } = useContext(UserProfileContext);
 
+  const baseURL = 'https://chattas-backend-qa.azurewebsites.net'
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userProfileData = localStorage.getItem('userProfile');
@@ -31,7 +33,7 @@ function Login() {
     setError('');
   
     try {
-      const response = await fetch('http://localhost:8090/login', {
+      const response = await fetch(`${baseURL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

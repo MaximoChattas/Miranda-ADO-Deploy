@@ -14,6 +14,8 @@ const HotelAvailable = () => {
     endDate: new Date(),
   });
 
+  const baseURL = 'https://chattas-backend-qa.azurewebsites.net'
+
   const { loggedIn } = useContext(LoginContext);
 
   const fetchHotels = async () => {
@@ -24,7 +26,7 @@ const HotelAvailable = () => {
       const endTime = "11:00";
       const startDateTime = `${startDate}+${startTime}`;
       const endDateTime = `${endDate}+${endTime}`;
-      const url = `http://localhost:8090/availability?start_date=${startDateTime}&end_date=${endDateTime}`;
+      const url = `${baseURL}/availability?start_date=${startDateTime}&end_date=${endDateTime}`;
       const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
@@ -86,7 +88,7 @@ const HotelAvailable = () => {
               {hotel.images &&
                   <img className="card-img-top"
                        alt={`Image for ${hotel.name}`}
-                       src={`http://localhost:8090/image/${hotel.images[0].id}`}
+                       src={`${baseURL}/image/${hotel.images[0].id}`}
                   />}
               <div className="card-body">
                 <h5 className="card-title">

@@ -20,10 +20,12 @@ const HotelDetails = () => {
   });
   const navigate = useNavigate();
 
+  const baseURL = 'https://chattas-backend-qa.azurewebsites.net'
+
   useEffect(() => {
     const fetchHotelDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:8090/hotel/${id}`);
+        const response = await fetch(`${baseURL}/hotel/${id}`);
         if (response.ok) {
           const data = await response.json();
           setHotel(data);
@@ -45,7 +47,7 @@ const HotelDetails = () => {
 
   const handleDeleteHotel = async () => {
     try {
-      const response = await fetch(`http://localhost:8090/hotel/${id}`, {
+      const response = await fetch(`${baseURL}/hotel/${id}`, {
         method: 'DELETE',
       });
       if (response.ok) {
@@ -101,7 +103,7 @@ const HotelDetails = () => {
               {hotel.images.map((image) => (
                   <div key={image.id} className={`carousel-item ${image.id === hotel.images[index].id ? 'active' : ''}`}>
                     <img
-                        src={`http://localhost:8090/image/${image.id}`}
+                        src={`${baseURL}/image/${image.id}`}
                         className="d-block w-100 carousel-img"
                         alt={image.id}
                     />

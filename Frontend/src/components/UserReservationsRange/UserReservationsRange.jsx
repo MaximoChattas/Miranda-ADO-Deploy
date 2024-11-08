@@ -17,6 +17,8 @@ const ReservationsInRange = () => {
   const { loggedIn } = useContext(LoginContext);
   const { userProfile } = useContext(UserProfileContext);
 
+  const baseURL = 'https://chattas-backend-qa.azurewebsites.net'
+
     if (!loggedIn) {
         return (
             <>
@@ -36,7 +38,7 @@ const ReservationsInRange = () => {
       const endTime = "23:59";
       const startDateTime = `${startDate}+${startTime}`;
       const endDateTime = `${endDate}+${endTime}`;
-      const url = `http://localhost:8090/user/reservations/${id}/range?start_date=${startDateTime}&end_date=${endDateTime}`;
+      const url = `${baseURL}/user/reservations/${id}/range?start_date=${startDateTime}&end_date=${endDateTime}`;
       const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();

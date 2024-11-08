@@ -18,15 +18,17 @@ const ReservationDetails = () => {
   const { userProfile } = useContext(UserProfileContext);
   const navigate = useNavigate()
 
+  const baseURL = 'https://chattas-backend-qa.azurewebsites.net'
+
   useEffect(() => {
     const fetchReservationDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:8090/reservation/${id}`);
+        const response = await fetch(`${baseURL}/reservation/${id}`);
         if (response.ok) {
           const data = await response.json();
           setReservation(data);
 
-          const hotelResponse = await fetch(`http://localhost:8090/hotel/${data.hotel_id}`);
+          const hotelResponse = await fetch(`${baseURL}/hotel/${data.hotel_id}`);
           if (hotelResponse.ok) {
             const hotelData = await hotelResponse.json();
             setHotel(hotelData);
@@ -62,7 +64,7 @@ const ReservationDetails = () => {
 
   const handleDeleteReservation = async () => {
     try {
-      const response = await fetch(`http://localhost:8090/reservation/${id}`, {
+      const response = await fetch(`${baseURL}/reservation/${id}`, {
         method: 'DELETE',
       });
       if (response.ok) {

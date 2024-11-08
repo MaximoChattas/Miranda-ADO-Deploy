@@ -32,6 +32,8 @@ const Reservation = ({ hotel_id, hotelRate, startDate, endDate }) => {
     const checkoutDate = new Date(endDate);
     checkoutDate.setHours(11, 0, 0, 0);
 
+    const baseURL = 'https://chattas-backend-qa.azurewebsites.net'
+
     try {
       const reservationData = {
         user_id: parseInt(userProfile.id),
@@ -40,7 +42,7 @@ const Reservation = ({ hotel_id, hotelRate, startDate, endDate }) => {
         end_date: format(checkoutDate, "dd-MM-yyyy HH:mm"),
       };
 
-      const response = await fetch("http://localhost:8090/reserve", {
+      const response = await fetch(`${baseURL}/reserve`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
