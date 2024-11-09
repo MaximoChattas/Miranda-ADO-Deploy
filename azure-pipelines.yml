@@ -126,7 +126,7 @@ stages:
     - task: ArchiveFiles@2
       displayName: 'Archive files'
       inputs:
-        rootFolderOrFile: '$(frontPath)'
+        rootFolderOrFile: '$(frontPath)/dist'
         includeRootFolder: false
         archiveType: zip
         archiveFile: $(Build.ArtifactsStagingDirectory)/Frontend/front-drop.zip
@@ -135,7 +135,7 @@ stages:
       displayName: 'Publish Frontend Build Artifacts'
       inputs:
         artifactName: '$(frontDrop)'
-        PathtoPublish: $(Build.ArtifactsStagingDirectory)/Frontend/dist
+        PathtoPublish: $(Build.ArtifactsStagingDirectory)/Frontend
         publishLocation: 'Container'
 
     - task: PublishPipelineArtifact@1
