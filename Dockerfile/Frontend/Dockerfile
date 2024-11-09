@@ -1,10 +1,10 @@
-FROM node:18-alpine as base
+FROM nginx:alpine
 
-WORKDIR /app
-COPY . .
+WORKDIR /usr/share/nginx/html
 
-RUN npm install -g serve
+RUN rm -rf ./*
+
+COPY ./ .
 
 EXPOSE 80
-
-CMD ["serve", "-s", "build", "-l", "80"]
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
