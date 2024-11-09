@@ -1,11 +1,10 @@
-FROM nginx:alpine
+FROM node:18-alpine as base
 
-WORKDIR /usr/share/nginx/html
+WORKDIR /app
+COPY . .
 
-RUN rm -rf ./*
+RUN npm install -g serve
 
-COPY ./ .
-
-# Exponer el puerto 80 para servir la aplicación Angular
 EXPOSE 80
-CMD sh -c 'nginx -g "daemon off;"'
+
+CMD ["serve", "-s", "build", "-l", "80"]
