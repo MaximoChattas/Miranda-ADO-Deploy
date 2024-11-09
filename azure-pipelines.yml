@@ -112,44 +112,44 @@ stages:
         targetPath: '$(Build.SourcesDirectory)/Dockerfile/Backend/Dockerfile'
         artifact: 'dockerfile-back'
 
-# -------------------------------------------------------------------------------
-# |                        BUILD AND TEST FRONT                                 |
-# -------------------------------------------------------------------------------
-  - job: BuildAndTestFront
-    displayName: 'Build And Test Frontend'
-    steps:
-    - task: NodeTool@0
-      inputs:
-        versionSpec: '20.x'
-      displayName: 'Install Node.js'
-
-    - script: |
-        npm install
-        npm install cli-js -g
-        npm run build
-      workingDirectory: '$(frontPath)'
-      displayName: 'Install dependencies and build React App'
-    
-    - task: ArchiveFiles@2
-      displayName: 'Archive files'
-      inputs:
-        rootFolderOrFile: '$(frontPath)'
-        includeRootFolder: false
-        archiveType: zip
-        archiveFile: $(Build.ArtifactsStagingDirectory)/Frontend/front-drop.zip
-    
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Frontend Build Artifacts'
-      inputs:
-        artifactName: '$(frontDrop)'
-        PathtoPublish: $(Build.ArtifactsStagingDirectory)/Frontend
-        publishLocation: 'Container'
-
-    - task: PublishPipelineArtifact@1
-      displayName: 'Publish Frontend Dockerfile'
-      inputs:
-        targetPath: '$(Build.SourcesDirectory)/Dockerfile/Frontend/Dockerfile'
-        artifact: 'dockerfile-front'
+## -------------------------------------------------------------------------------
+## |                        BUILD AND TEST FRONT                                 |
+## -------------------------------------------------------------------------------
+#  - job: BuildAndTestFront
+#    displayName: 'Build And Test Frontend'
+#    steps:
+#    - task: NodeTool@0
+#      inputs:
+#        versionSpec: '20.x'
+#      displayName: 'Install Node.js'
+#
+#    - script: |
+#        npm install
+#        npm install cli-js -g
+#        npm run build
+#      workingDirectory: '$(frontPath)'
+#      displayName: 'Install dependencies and build React App'
+#
+#    - task: ArchiveFiles@2
+#      displayName: 'Archive files'
+#      inputs:
+#        rootFolderOrFile: '$(frontPath)'
+#        includeRootFolder: false
+#        archiveType: zip
+#        archiveFile: $(Build.ArtifactsStagingDirectory)/Frontend/front-drop.zip
+#
+#    - task: PublishBuildArtifacts@1
+#      displayName: 'Publish Frontend Build Artifacts'
+#      inputs:
+#        artifactName: '$(frontDrop)'
+#        PathtoPublish: $(Build.ArtifactsStagingDirectory)/Frontend
+#        publishLocation: 'Container'
+#
+#    - task: PublishPipelineArtifact@1
+#      displayName: 'Publish Frontend Dockerfile'
+#      inputs:
+#        targetPath: '$(Build.SourcesDirectory)/Dockerfile/Frontend/Dockerfile'
+#        artifact: 'dockerfile-front'
 
 # -------------------------------------------------------------------------------
 # |     STAGE BUILD AND PUSH FRONTEND AND BACKEND DOCKER IMAGES TO ACR          |
@@ -216,63 +216,63 @@ stages:
             repository: $(acrLoginServer)/$(backImageName)
             tags: 'latest'
 
-# -------------------------------------------------------------------------------
-# |                        BUILD AND PUSH FRONT                                 |
-# -------------------------------------------------------------------------------
-    - job: docker_build_and_push_front
-      displayName: 'Build and Push Front Docker Image to ACR'
-      pool:
-        vmImage: 'ubuntu-latest'
-        
-      steps:
-        - checkout: self
-        - task: DownloadPipelineArtifact@2
-          displayName: 'Download Front artifacts'
-          inputs:
-            buildType: 'current'
-            artifactName: $(frontDrop)
-            targetPath: '$(Pipeline.Workspace)/$(frontDrop)'
-        
-        - task: ExtractFiles@1
-          displayName: 'Unzip Front artifacts'
-          inputs:
-            archiveFilePatterns: '$(Pipeline.Workspace)/$(frontDrop)/*.zip'
-            destinationFolder: '$(Pipeline.Workspace)/React-APP'
-
-        - task: DownloadPipelineArtifact@2
-          displayName: 'Download Front Dockerfile'
-          inputs:
-            buildType: 'current'
-            artifactName: 'dockerfile-front'
-            targetPath: '$(Pipeline.Workspace)/dockerfile-front'
-
-        - task: AzureCLI@2
-          displayName: 'Log in to Azure Container Registry (ACR)'
-          inputs:
-            azureSubscription: '$(ConnectedServiceName)'
-            scriptType: bash
-            scriptLocation: inlineScript
-            inlineScript: |
-              az acr login --name $(acrLoginServer)
-        
-        - script: ls -lR
-          workingDirectory: $(Pipeline.Workspace)/React-APP
-    
-        - task: Docker@2
-          displayName: 'Build Front Docker image'
-          inputs:
-            command: build
-            repository: $(acrLoginServer)/$(frontImageName)
-            dockerfile: $(Pipeline.Workspace)/dockerfile-front/Dockerfile
-            buildContext: '$(Pipeline.Workspace)/React-APP'
-            tags: '$(frontImageTag)'
-
-        - task: Docker@2
-          displayName: 'Upload API Docker image to ACR'
-          inputs:
-            command: push
-            repository: $(acrLoginServer)/$(frontImageName)
-            tags: 'latest'
+## -------------------------------------------------------------------------------
+## |                        BUILD AND PUSH FRONT                                 |
+## -------------------------------------------------------------------------------
+#    - job: docker_build_and_push_front
+#      displayName: 'Build and Push Front Docker Image to ACR'
+#      pool:
+#        vmImage: 'ubuntu-latest'
+#
+#      steps:
+#        - checkout: self
+#        - task: DownloadPipelineArtifact@2
+#          displayName: 'Download Front artifacts'
+#          inputs:
+#            buildType: 'current'
+#            artifactName: $(frontDrop)
+#            targetPath: '$(Pipeline.Workspace)/$(frontDrop)'
+#
+#        - task: ExtractFiles@1
+#          displayName: 'Unzip Front artifacts'
+#          inputs:
+#            archiveFilePatterns: '$(Pipeline.Workspace)/$(frontDrop)/*.zip'
+#            destinationFolder: '$(Pipeline.Workspace)/React-APP'
+#
+#        - task: DownloadPipelineArtifact@2
+#          displayName: 'Download Front Dockerfile'
+#          inputs:
+#            buildType: 'current'
+#            artifactName: 'dockerfile-front'
+#            targetPath: '$(Pipeline.Workspace)/dockerfile-front'
+#
+#        - task: AzureCLI@2
+#          displayName: 'Log in to Azure Container Registry (ACR)'
+#          inputs:
+#            azureSubscription: '$(ConnectedServiceName)'
+#            scriptType: bash
+#            scriptLocation: inlineScript
+#            inlineScript: |
+#              az acr login --name $(acrLoginServer)
+#
+#        - script: ls -lR
+#          workingDirectory: $(Pipeline.Workspace)/React-APP
+#
+#        - task: Docker@2
+#          displayName: 'Build Front Docker image'
+#          inputs:
+#            command: build
+#            repository: $(acrLoginServer)/$(frontImageName)
+#            dockerfile: $(Pipeline.Workspace)/dockerfile-front/Dockerfile
+#            buildContext: '$(Pipeline.Workspace)/React-APP'
+#            tags: '$(frontImageTag)'
+#
+#        - task: Docker@2
+#          displayName: 'Upload API Docker image to ACR'
+#          inputs:
+#            command: push
+#            repository: $(acrLoginServer)/$(frontImageName)
+#            tags: 'latest'
 
 # -------------------------------------------------------------------------------
 # |     STAGE DEPLOY FRONTEND AND BACKEND TO AZURE APP SERVICES QA              |
@@ -315,34 +315,34 @@ stages:
                 --container-registry-user $(acrName) \
                 --container-registry-password $(az acr credential show --name $(acrName) --query "passwords[0].value" -o tsv)
 
-# -------------------------------------------------------------------------------
-# |               DEPLOY FRONT TO AZURE APP SERVICE                             |
-# -------------------------------------------------------------------------------
-    - job: DeployFrontImageToAppServiceQA
-      displayName: 'Deploy Front to Azure App Service (QA)'
-      pool:
-        vmImage: 'ubuntu-latest'
-      steps:
-        - task: AzureCLI@2
-          displayName: 'Create Front Azure App Service resource and configure image'
-          inputs:
-            azureSubscription: '$(ConnectedServiceName)'
-            scriptType: 'bash'
-            scriptLocation: 'inlineScript'
-            inlineScript: |
-              # Check if API App Service already exists
-              if ! az webapp list --query "[?name=='$(frontAppServiceQA)' && resourceGroup=='$(ResourceGroupName)'] | length(@)" -o tsv | grep -q '^1$'; then
-                echo "Front App Service doesn't exist. Creating new..."
-                # Create App Service without specifying container image
-                az webapp create --resource-group $(ResourceGroupName) --plan $(AppServicePlanLinux) --name $(frontAppServiceQA) --deployment-container-image-name "nginx"  # Especifica una imagen temporal para permitir la creación
-              else
-                echo "API App Service already exists. Updating image..."
-              fi
-
-              # Configure App Service to use Azure Container Registry (ACR)
-              az webapp config container set --name $(frontAppServiceQA) --resource-group $(ResourceGroupName) \
-                --container-image-name $(acrLoginServer)/$(frontImageName):$(frontImageTag) \
-                --container-registry-url https://$(acrLoginServer) \
-                --container-registry-user $(acrName) \
-                --container-registry-password $(az acr credential show --name $(acrName) --query "passwords[0].value" -o tsv)
-
+## -------------------------------------------------------------------------------
+## |               DEPLOY FRONT TO AZURE APP SERVICE                             |
+## -------------------------------------------------------------------------------
+#    - job: DeployFrontImageToAppServiceQA
+#      displayName: 'Deploy Front to Azure App Service (QA)'
+#      pool:
+#        vmImage: 'ubuntu-latest'
+#      steps:
+#        - task: AzureCLI@2
+#          displayName: 'Create Front Azure App Service resource and configure image'
+#          inputs:
+#            azureSubscription: '$(ConnectedServiceName)'
+#            scriptType: 'bash'
+#            scriptLocation: 'inlineScript'
+#            inlineScript: |
+#              # Check if API App Service already exists
+#              if ! az webapp list --query "[?name=='$(frontAppServiceQA)' && resourceGroup=='$(ResourceGroupName)'] | length(@)" -o tsv | grep -q '^1$'; then
+#                echo "Front App Service doesn't exist. Creating new..."
+#                # Create App Service without specifying container image
+#                az webapp create --resource-group $(ResourceGroupName) --plan $(AppServicePlanLinux) --name $(frontAppServiceQA) --deployment-container-image-name "nginx"  # Especifica una imagen temporal para permitir la creación
+#              else
+#                echo "API App Service already exists. Updating image..."
+#              fi
+#
+#              # Configure App Service to use Azure Container Registry (ACR)
+#              az webapp config container set --name $(frontAppServiceQA) --resource-group $(ResourceGroupName) \
+#                --container-image-name $(acrLoginServer)/$(frontImageName):$(frontImageTag) \
+#                --container-registry-url https://$(acrLoginServer) \
+#                --container-registry-user $(acrName) \
+#                --container-registry-password $(az acr credential show --name $(acrName) --query "passwords[0].value" -o tsv)
+#
