@@ -1,9 +1,3 @@
-# Go
-# Build your Go project.
-# Add steps that test, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/go
-# Template requirements: *.go and go.mod files in directory
-
 trigger:
 - main
 
@@ -215,59 +209,59 @@ stages:
             repository: $(acrLoginServer)/$(backImageName)
             tags: 'latest'
 
-# -------------------------------------------------------------------------------
-# |                        BUILD AND PUSH FRONT                                 |
-# -------------------------------------------------------------------------------
-    - job: docker_build_and_push_front
-      displayName: 'Build and Push Front Docker Image to ACR'
-      pool:
-       vmImage: 'ubuntu-latest'
-      steps:
-        - checkout: self
-        - task: DownloadPipelineArtifact@2
-          displayName: 'Download Front artifacts'
-          inputs:
-            buildType: 'current'
-            artifactName: $(frontDrop)
-            targetPath: '$(Pipeline.Workspace)/$(frontDrop)'
+# # -------------------------------------------------------------------------------
+# # |                        BUILD AND PUSH FRONT                                 |
+# # -------------------------------------------------------------------------------
+#     - job: docker_build_and_push_front
+#       displayName: 'Build and Push Front Docker Image to ACR'
+#       pool:
+#        vmImage: 'ubuntu-latest'
+#       steps:
+#         - checkout: self
+#         - task: DownloadPipelineArtifact@2
+#           displayName: 'Download Front artifacts'
+#           inputs:
+#             buildType: 'current'
+#             artifactName: $(frontDrop)
+#             targetPath: '$(Pipeline.Workspace)/$(frontDrop)'
 
-        - task: ExtractFiles@1
-          displayName: 'Unzip Front artifacts'
-          inputs:
-            archiveFilePatterns: '$(Pipeline.Workspace)/$(frontDrop)/*.zip'
-            destinationFolder: '$(Pipeline.Workspace)/React-APP'
+#         - task: ExtractFiles@1
+#           displayName: 'Unzip Front artifacts'
+#           inputs:
+#             archiveFilePatterns: '$(Pipeline.Workspace)/$(frontDrop)/*.zip'
+#             destinationFolder: '$(Pipeline.Workspace)/React-APP'
 
-        - task: DownloadPipelineArtifact@2
-          displayName: 'Download Front Dockerfile'
-          inputs:
-            buildType: 'current'
-            artifactName: 'dockerfile-front'
-            targetPath: '$(Pipeline.Workspace)/dockerfile-front'
+#         - task: DownloadPipelineArtifact@2
+#           displayName: 'Download Front Dockerfile'
+#           inputs:
+#             buildType: 'current'
+#             artifactName: 'dockerfile-front'
+#             targetPath: '$(Pipeline.Workspace)/dockerfile-front'
 
-        - task: AzureCLI@2
-          displayName: 'Log in to Azure Container Registry (ACR)'
-          inputs:
-            azureSubscription: '$(ConnectedServiceName)'
-            scriptType: bash
-            scriptLocation: inlineScript
-            inlineScript: |
-             az acr login --name $(acrLoginServer)
+#         - task: AzureCLI@2
+#           displayName: 'Log in to Azure Container Registry (ACR)'
+#           inputs:
+#             azureSubscription: '$(ConnectedServiceName)'
+#             scriptType: bash
+#             scriptLocation: inlineScript
+#             inlineScript: |
+#              az acr login --name $(acrLoginServer)
 
-        - task: Docker@2
-          displayName: 'Build Front Docker image'
-          inputs:
-            command: build
-            repository: $(acrLoginServer)/$(frontImageName)
-            dockerfile: $(Pipeline.Workspace)/dockerfile-front/Dockerfile
-            buildContext: '$(Pipeline.Workspace)/React-APP'
-            tags: '$(frontImageTag)'
+#         - task: Docker@2
+#           displayName: 'Build Front Docker image'
+#           inputs:
+#             command: build
+#             repository: $(acrLoginServer)/$(frontImageName)
+#             dockerfile: $(Pipeline.Workspace)/dockerfile-front/Dockerfile
+#             buildContext: '$(Pipeline.Workspace)/React-APP'
+#             tags: '$(frontImageTag)'
 
-        - task: Docker@2
-          displayName: 'Upload API Docker image to ACR'
-          inputs:
-            command: push
-            repository: $(acrLoginServer)/$(frontImageName)
-            tags: 'latest'
+#         - task: Docker@2
+#           displayName: 'Upload API Docker image to ACR'
+#           inputs:
+#             command: push
+#             repository: $(acrLoginServer)/$(frontImageName)
+#             tags: 'latest'
 
 # -------------------------------------------------------------------------------
 # |     STAGE DEPLOY FRONTEND AND BACKEND TO AZURE APP SERVICES QA              |
@@ -353,11 +347,11 @@ stages:
             buildType: 'current'
             artifactName: $(frontDrop)
             targetPath: '$(Pipeline.Workspace)/$(frontDrop)'
-
+        
         - task: AzureRmWebAppDeployment@4
           inputs:
             ConnectionType: 'AzureRM'
             azureSubscription: 'Azure subscription 1 (f7ecd1b3-7c3e-4cb1-9653-fc24ede1711b)'
-            appType: 'webAppLinux'
-            WebAppName: 'miranda-front-qa'
+            appType: 'webApp'
+            WebAppName: 'frontend-windows-qa'
             packageForLinux: '$(Pipeline.Workspace)/$(frontDrop)/**/*.zip'
