@@ -1,6 +1,7 @@
 package db
 
 import (
+	"os"
 	"project/client"
 	"project/model"
 
@@ -16,17 +17,7 @@ var (
 
 func init() {
 
-	//dsn := os.Getenv("DBCONNSTRING")
-
-	var server = "chattas-miranda.database.windows.net"
-	var port = "1433"
-	var user = "sqladmin"
-	var password = "Maximo123"
-	var database = "MirandaDB"
-
-	dsn := "sqlserver://" + user + ":" + password + "@" + server + ":" + port + "?database=" + database
-
-	log.Info(dsn)
+	dsn := os.Getenv("DBCONNSTRING")
 
 	Db, err = gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
 

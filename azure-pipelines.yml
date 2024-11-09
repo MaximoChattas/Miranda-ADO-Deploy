@@ -314,6 +314,9 @@ stages:
                 --container-registry-url https://$(acrLoginServer) \
                 --container-registry-user $(acrName) \
                 --container-registry-password $(az acr credential show --name $(acrName) --query "passwords[0].value" -o tsv)
+              # Set environment variables
+              az webapp config appsettings set --name $(backAppServiceQA) --resource-group $(ResourceGroupName) \
+                --settings DBCONNSTRING="$(connection_string_qa)" \
 
 ## -------------------------------------------------------------------------------
 ## |               DEPLOY FRONT TO AZURE APP SERVICE                             |
