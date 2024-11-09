@@ -126,13 +126,13 @@ stages:
     - script: |
        npm install
        npm run build
-      workingDirectory: '$(frontPath)'
+      workingDirectory: '$(frontPath)/src'
       displayName: 'Install dependencies and build React App'
 
     - task: ArchiveFiles@2
       displayName: 'Archive files'
       inputs:
-        rootFolderOrFile: '$(frontPath)'
+        rootFolderOrFile: '$(frontPath)/src/build'
         includeRootFolder: false
         archiveType: zip
         archiveFile: $(Build.ArtifactsStagingDirectory)/Frontend/front-drop.zip
