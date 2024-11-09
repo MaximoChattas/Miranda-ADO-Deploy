@@ -126,13 +126,13 @@ stages:
     - script: |
        npm install
        npm run build
-      workingDirectory: '$(frontPath)/src'
+      workingDirectory: '$(frontPath)'
       displayName: 'Install dependencies and build React App'
 
     - task: ArchiveFiles@2
       displayName: 'Archive files'
       inputs:
-        rootFolderOrFile: '$(frontPath)/src/build'
+        rootFolderOrFile: '$(frontPath)'
         includeRootFolder: false
         archiveType: zip
         archiveFile: $(Build.ArtifactsStagingDirectory)/Frontend/front-drop.zip
@@ -344,3 +344,20 @@ stages:
 #                --container-registry-user $(acrName) \
 #                --container-registry-password $(az acr credential show --name $(acrName) --query "passwords[0].value" -o tsv)
 #
+    - job: DeployFrontToWebAppQA
+      displayName: 'Deploy Frontend to Web App (QA)'
+      steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download Front artifacts'
+          inputs:
+            buildType: 'current'
+            artifactName: $(frontDrop)
+            targetPath: '$(Pipeline.Workspace)/$(frontDrop)'
+
+        - task: AzureRmWebAppDeployment@4
+          inputs:
+            ConnectionType: 'AzureRM'
+            azureSubscription: 'Azure subscription 1 (f7ecd1b3-7c3e-4cb1-9653-fc24ede1711b)'
+            appType: 'webAppLinux'
+            WebAppName: 'miranda-front-qa'
+            packageForLinux: '$(Pipeline.Workspace)/$(frontDrop)/**/*.zip'
