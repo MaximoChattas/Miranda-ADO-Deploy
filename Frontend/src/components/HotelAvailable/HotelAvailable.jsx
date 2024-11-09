@@ -14,7 +14,7 @@ const HotelAvailable = () => {
     endDate: new Date(),
   });
 
-  const baseURL = 'https://chattas-backend-qa.azurewebsites.net'
+  const baseURL = import.meta.env.VITE_base_url
 
   const { loggedIn } = useContext(LoginContext);
 

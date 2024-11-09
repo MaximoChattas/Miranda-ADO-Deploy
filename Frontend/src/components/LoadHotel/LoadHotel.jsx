@@ -25,7 +25,7 @@ function LoadHotel() {
 
     const navigate = useNavigate();
 
-    const baseURL = 'https://chattas-backend-qa.azurewebsites.net'
+    const baseURL = import.meta.env.VITE_base_url
 
     const handleLoadHotel = async (e) => {
         e.preventDefault();

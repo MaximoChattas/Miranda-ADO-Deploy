@@ -15,7 +15,7 @@ function Login() {
   const { loggedIn, setLoggedIn } = useContext(LoginContext);
   const { userProfile, setUserProfile } = useContext(UserProfileContext);
 
-  const baseURL = 'https://chattas-backend-qa.azurewebsites.net'
+  const baseURL = import.meta.env.VITE_base_url
 
   useEffect(() => {
     const token = localStorage.getItem('token');

@@ -32,7 +32,7 @@ const Reservation = ({ hotel_id, hotelRate, startDate, endDate }) => {
     const checkoutDate = new Date(endDate);
     checkoutDate.setHours(11, 0, 0, 0);
 
-    const baseURL = 'https://chattas-backend-qa.azurewebsites.net'
+    const baseURL = import.meta.env.VITE_base_url
 
     try {
       const reservationData = {

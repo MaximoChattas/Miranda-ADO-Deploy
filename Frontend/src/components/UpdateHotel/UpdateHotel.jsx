@@ -22,7 +22,7 @@ function UpdateHotel() {
 
     const navigate = useNavigate();
 
-    const baseURL = 'https://chattas-backend-qa.azurewebsites.net'
+    const baseURL = import.meta.env.VITE_base_url
 
     useEffect(() => {
         const fetchHotelDetails = async () => {

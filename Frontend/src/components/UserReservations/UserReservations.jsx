@@ -13,7 +13,7 @@ const UserReservations = () => {
   const { userProfile } = useContext(UserProfileContext);
   const { loggedIn } = useContext(LoginContext);
 
-  const baseURL = 'https://chattas-backend-qa.azurewebsites.net'
+  const baseURL = import.meta.env.VITE_base_url
 
   useEffect(() => {
     const fetchUserReservations = async () => {

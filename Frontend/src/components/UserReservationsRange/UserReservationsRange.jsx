@@ -17,7 +17,7 @@ const ReservationsInRange = () => {
   const { loggedIn } = useContext(LoginContext);
   const { userProfile } = useContext(UserProfileContext);
 
-  const baseURL = 'https://chattas-backend-qa.azurewebsites.net'
+  const baseURL = import.meta.env.VITE_base_url
 
     if (!loggedIn) {
         return (
