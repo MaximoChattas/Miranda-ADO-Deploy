@@ -1,7 +1,10 @@
-FROM node
-WORKDIR /frontend
-COPY package.json .
-COPY package-lock.json .
+FROM node:18-alpine as base
+
+WORKDIR /app
 COPY . .
-EXPOSE 5173
-CMD ["npm", "run", "dev"]
+
+RUN npm install -g serve
+
+EXPOSE 80
+
+CMD ["serve", "-s", "build", "-l", "80"]
