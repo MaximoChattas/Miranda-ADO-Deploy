@@ -33,7 +33,7 @@ func (t TestHotel) GetHotelById(id int) model.Hotel {
 	} else {
 		hotel.Id = 1
 		hotel.Name = "Hotel 1"
-		hotel.RoomAmount = 10
+		hotel.RoomAmount = 2
 		hotel.Description = "Hotel 1 Description"
 		hotel.StreetName = "Hotel 1 Street"
 		hotel.StreetNumber = 10
