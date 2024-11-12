@@ -234,7 +234,7 @@ func (s *reservationService) DeleteReservation(id int) error {
 
 	reservationStart, _ := time.Parse("02-01-2006 15:04", reservation.StartDate)
 
-	if reservationStart.Before(time.Now().Add(-48 * time.Hour)) {
+	if reservationStart.Before(time.Now().Add(48 * time.Hour)) {
 		return errors.New("can't delete a reservation 48hs before it starts")
 	}
 
