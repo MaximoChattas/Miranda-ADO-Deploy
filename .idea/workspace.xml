@@ -6,14 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="8094b6c0-0600-40bc-89d9-f6442fd856e8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/src/components/AdminHotelReservations/AdminHotelReservations.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/AdminHotelReservations/AdminHotelReservations.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/src/components/AdminUserReservations/AdminUserReservations.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/AdminUserReservations/AdminUserReservations.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/src/components/HotelAvailable/HotelAvailable.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/HotelAvailable/HotelAvailable.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/src/components/HotelDetails/HotelDetails.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/HotelDetails/HotelDetails.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/src/components/HotelList/HotelList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/HotelList/HotelList.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/src/components/LoadAmenity/LoadAmenity.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/LoadAmenity/LoadAmenity.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/src/components/LoadHotel/LoadHotel.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/LoadHotel/LoadHotel.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/src/components/Login/Login.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/Login/Login.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/service/reservation.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/service/reservation.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,7 +50,7 @@
     "git-widget-placeholder": "main",
     "go.import.settings.migrated": "true",
     "go.sdk.automatically.set": "true",
-    "last_opened_file_path": "/Users/maxichattas/Documents/UCC/4º Año/Ingeniería de Software III/Práctico/Recursos/Miranda_Hotels",
+    "last_opened_file_path": "/Users/maxichattas/Documents/UCC/4º Año/Ingeniería de Software III/Práctico/Recursos/Miranda-Hotels",
     "node.js.detected.package.eslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
