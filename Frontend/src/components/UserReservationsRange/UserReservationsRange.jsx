@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, {useContext, useEffect, useState} from "react";
 import { Link } from "react-router-dom";
 import { LoginContext, UserProfileContext } from '../../App';
 import Navbar from "../NavBar/NavBar";
@@ -8,6 +8,7 @@ import "./UserReservationsRange.css"
 
 const ReservationsInRange = () => {
   const [reservations, setReservations] = useState([]);
+  const [baseURL, setBaseURL] = useState('');
   const [error, setError] = useState(null);
   const [selectedDates, setSelectedDates] = useState({
     startDate: new Date(),
@@ -17,7 +18,17 @@ const ReservationsInRange = () => {
   const { loggedIn } = useContext(LoginContext);
   const { userProfile } = useContext(UserProfileContext);
 
-  const baseURL = import.meta.env.VITE_base_url
+    useEffect(() => {
+        fetch('/config.json')
+            .then(response => response.json())
+            .then(data => {
+                setBaseURL(data.apiUrl);
+            })
+            .catch(error => {
+                console.error('Error loading config:', error);
+                setError('Failed to load configuration');
+            });
+    }, []);
 
     if (!loggedIn) {
         return (
@@ -31,6 +42,11 @@ const ReservationsInRange = () => {
   const id = userProfile.id;
 
   const fetchReservations = async () => {
+      if (!baseURL) {
+          console.error('Base URL not set');
+          return;
+      }
+
     try {
       const startDate = format(selectedDates.startDate, "dd-MM-yyyy");
       const endDate = format(selectedDates.endDate, "dd-MM-yyyy");

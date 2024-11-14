@@ -16,7 +16,7 @@ function LoadHotel() {
     const [images, setImages] = useState([]);
 
     const [hotelId, setHotelId] = useState('');
-    const [isLoaded, setIsLoaded] = useState(false)
+    const [isLoaded, setIsLoaded] = useState(false);
 
     const { loggedIn } = useContext(LoginContext);
     const { userProfile } = useContext(UserProfileContext);
@@ -25,7 +25,19 @@ function LoadHotel() {
 
     const navigate = useNavigate();
 
-    const baseURL = import.meta.env.VITE_base_url
+    const [baseURL, setBaseURL] = useState('');
+
+    useEffect(() => {
+        fetch('/config.json')
+            .then(response => response.json())
+            .then(data => {
+                setBaseURL(data.apiUrl);
+            })
+            .catch(error => {
+                console.error('Error loading config:', error);
+                setError('Failed to load configuration');
+            });
+    }, []);
 
     const handleLoadHotel = async (e) => {
         e.preventDefault();
@@ -56,7 +68,6 @@ function LoadHotel() {
                 setIsLoaded(true);
                 const data = await response.json();
                 setHotelId(data.id);
-
             } else {
                 const data = await response.json();
                 const errorMessage = data.error || 'Error';
@@ -83,7 +94,7 @@ function LoadHotel() {
             });
 
             if (response.ok) {
-                navigate('/')
+                navigate('/');
             } else {
                 const errorData = await response.json();
                 throw new Error(errorData.error);
@@ -110,28 +121,23 @@ function LoadHotel() {
                     const data = await response.json();
                     setAmenities(data);
                 } else {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error);
+                    throw new Error('Error fetching amenities');
                 }
             } catch (error) {
                 console.error(error);
-                setError(error.message);
+                setError('Error fetching amenities');
             }
         };
-
-        fetchAmenities();
-    }, []);
-
-    const handleImageChange = (e) => {
-        const files = Array.from(e.target.files);
-        setImages(files);
-    };
+        if (baseURL) {
+            fetchAmenities();
+        }
+    }, [baseURL]);
 
     if (!loggedIn || userProfile.role !== 'Admin') {
         return (
             <>
                 <Navbar />
-                <p className="contenedorLoad">No puedes acceder a este sitio.</p>
+                <p>No puedes acceder a este sitio.</p>
             </>
         );
     }
@@ -139,99 +145,64 @@ function LoadHotel() {
     return (
         <>
             <Navbar />
-            {!isLoaded &&
-                <div className="contenedorLoad">
+            <div className="contenedorLoadHotel">
                 <h2>Cargar Hotel</h2>
                 <form onSubmit={handleLoadHotel}>
                     <div>
                         <label>Nombre:</label>
-                        <input type="text" disabled={isLoaded} value={name} onChange={(e) => setName(e.target.value)} />
+                        <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
                     </div>
                     <div>
                         <label>Calle:</label>
-                        <input type="text" disabled={isLoaded} value={street_name} onChange={(e) => setStreet_name(e.target.value)} />
+                        <input type="text" value={street_name} onChange={(e) => setStreet_name(e.target.value)} />
                     </div>
                     <div>
-                        <label>Altura:</label>
-                        <input
-                            type="number"
-                            pattern="[0-9]*"
-                            value={street_number}
-                            disabled={isLoaded}
-                            onChange={(e) => setStreet_number(e.target.value)}
-                        />
+                        <label>Número:</label>
+                        <input type="number" value={street_number} onChange={(e) => setStreet_number(e.target.value)} />
                     </div>
                     <div>
-                        <label>Habitaciones:</label>
-                        <input
-                            type="number"
-                            pattern="[0-9]*"
-                            value={room_amount}
-                            disabled={isLoaded}
-                            onChange={(e) => setRoom_amount(e.target.value)}
-                        />
+                        <label>Cantidad de habitaciones:</label>
+                        <input type="number" value={room_amount} onChange={(e) => setRoom_amount(e.target.value)} />
                     </div>
                     <div>
-                        <label>Tarifa: $</label>
-                        <input type="number" disabled={isLoaded} pattern="[0-9]*" value={rate} onChange={(e) => setRate(e.target.value)} />
+                        <label>Rate:</label>
+                        <input type="number" step="0.1" value={rate} onChange={(e) => setRate(e.target.value)} />
                     </div>
                     <div>
                         <label>Descripción:</label>
-                        <div>
-              <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  disabled={isLoaded}
-                  placeholder="Ingrese la descripción"
-                  maxLength={1000}
-                  rows={4}
-                  cols={50}
-              />
-                            <div>
-                                Characters disponibles: {1000 - description.length} / {1000}
-                            </div>
-                        </div>
+                        <textarea value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
                     </div>
-                    {amenities &&
                     <div>
-                        <h5>Amenities:</h5>
-                        {amenities.map((amenity) => (
-                            <div key={amenity.id}>
+                        <label>Amenities:</label>
+                        {amenities.map((amenity, index) => (
+                            <div key={index}>
                                 <input
                                     type="checkbox"
-                                    value={amenity.name}
-                                    name="amenities"
-                                    disabled={isLoaded}
                                     onChange={(e) => handleAmenityChange(e, amenity.name)}
                                 />
-                                <span>{amenity.name}</span>
+                                {amenity.name}
                             </div>
                         ))}
                     </div>
-                    }
-                    {error && <p className="error-message">{error}</p>}
-                    <button type="submit" disabled={isLoaded}>
-                        {isLoaded ? 'Guardado' : 'Cargar Hotel'}
-                    </button>
-                </form>
-            </div>}
 
-            {isLoaded &&
-                <div className="contenedorLoad">
-                    <h2>Cargar Imagenes</h2>
+                    {error && <p className="error-message">{error}</p>}
+                    <button type="submit">Cargar Hotel</button>
+                </form>
+
+                {isLoaded && (
                     <form onSubmit={handleImagesUpload}>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            disabled={!isLoaded}
-                            onChange={handleImageChange}
-                        />
-                        <button type="submit" disabled={!isLoaded}>
-                            Cargar Imagenes
-                        </button>
+                        <div>
+                            <label>Subir Imágenes:</label>
+                            <input
+                                type="file"
+                                multiple
+                                onChange={(e) => setImages([...e.target.files])}
+                            />
+                        </div>
+                        <button type="submit">Cargar Imágenes</button>
                     </form>
-                </div>}
+                )}
+            </div>
         </>
     );
 }

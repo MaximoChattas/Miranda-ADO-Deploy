@@ -9,40 +9,53 @@ const UserReservations = () => {
   const { id } = useParams();
   const [userReservations, setUserReservations] = useState([]);
   const [hotels, setHotels] = useState([]);
+  const [baseURL, setBaseURL] = useState('');
   const [error, setError] = useState(null);
   const { userProfile } = useContext(UserProfileContext);
   const { loggedIn } = useContext(LoginContext);
 
-  const baseURL = import.meta.env.VITE_base_url
+  useEffect(() => {
+    fetch('/config.json')
+        .then(response => response.json())
+        .then(data => {
+          setBaseURL(data.apiUrl);
+        })
+        .catch(error => {
+          console.error('Error loading config:', error);
+          setError('Failed to load configuration');
+        });
+  }, []);
 
   useEffect(() => {
     const fetchUserReservations = async () => {
-      try {
-        const response = await fetch(`${baseURL}/user/reservations/${id}`);
-        if (response.ok) {
-          const data = await response.json();
-          setUserReservations(data);
+        if (baseURL) {
+            try {
+                const response = await fetch(`${baseURL}/user/reservations/${id}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setUserReservations(data);
 
-          const hotelResponse = await fetch(`${baseURL}/hotel`);
-            if (hotelResponse.ok) {
-            const hotelData = await hotelResponse.json();
-            setHotels(hotelData);
-            } else {
-            const errorData = await hotelResponse.json();
-            throw new Error(errorData.error);
+                    const hotelResponse = await fetch(`${baseURL}/hotel`);
+                    if (hotelResponse.ok) {
+                        const hotelData = await hotelResponse.json();
+                        setHotels(hotelData);
+                    } else {
+                        const errorData = await hotelResponse.json();
+                        throw new Error(errorData.error);
+                    }
+
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error);
+                }
+            } catch (error) {
+                setError(error.message);
             }
-
-        } else {
-          const errorData = await response.json();
-          throw new Error(errorData.error);
         }
-      } catch (error) {
-        setError(error.message);
-      }
     };
 
     fetchUserReservations();
-  }, [id]);
+  }, [id, baseURL]);
 
   if (error) {
     return <div>Error: {error}</div>;

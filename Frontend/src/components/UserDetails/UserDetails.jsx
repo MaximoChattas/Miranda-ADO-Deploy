@@ -8,12 +8,23 @@ import Navbar from "../NavBar/NavBar";
 const UserDetails = () => {
   const { id } = useParams();
   const [user, setUser] = useState(null);
+  const [baseURL, setBaseURL] = useState('');
   const [error, setError] = useState(null);
   const { loggedIn } = useContext(LoginContext);
   const { userProfile } = useContext(UserProfileContext);
   const navigate = useNavigate()
 
-  const baseURL = import.meta.env.VITE_base_url
+  useEffect(() => {
+    fetch('/config.json')
+        .then(response => response.json())
+        .then(data => {
+          setBaseURL(data.apiUrl);
+        })
+        .catch(error => {
+          console.error('Error loading config:', error);
+          setError('Failed to load configuration');
+        });
+  }, []);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -32,7 +43,7 @@ const UserDetails = () => {
     };
 
     fetchUserDetails();
-  }, [id]);
+  }, [id, baseURL]);
 
   if (error) {
     return (

@@ -11,14 +11,30 @@ function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const [baseURL, setBaseURL] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const baseURL = import.meta.env.VITE_base_url
-  
+  useEffect(() => {
+    fetch('/config.json')
+        .then(response => response.json())
+        .then(data => {
+          setBaseURL(data.apiUrl);
+        })
+        .catch(error => {
+          console.error('Error loading config:', error);
+          setError('Failed to load configuration');
+        });
+  }, []);
+
   const handleSignup = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (!baseURL) {
+      console.error('Base URL not set');
+      return;
+    }
   
     try {
 

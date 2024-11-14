@@ -9,16 +9,31 @@ import { format } from "date-fns";
 const HotelAvailable = () => {
   const [hotels, setHotels] = useState([]);
   const [error, setError] = useState(null);
+  const [baseURL, setBaseURL] = useState('');
   const [selectedDates, setSelectedDates] = useState({
     startDate: new Date(),
     endDate: new Date(),
   });
-
-  const baseURL = import.meta.env.VITE_base_url
-
   const { loggedIn } = useContext(LoginContext);
 
+  useEffect(() => {
+    fetch('/config.json')
+        .then(response => response.json())
+        .then(data => {
+          setBaseURL(data.apiUrl);
+        })
+        .catch(error => {
+          console.error('Error loading config:', error);
+          setError('Failed to load configuration');
+        });
+  }, []);
+
   const fetchHotels = async () => {
+    if (!baseURL) {
+      console.error('Base URL not set');
+      return;
+    }
+
     try {
       const startDate = format(selectedDates.startDate, "dd-MM-yyyy");
       const endDate = format(selectedDates.endDate, "dd-MM-yyyy");

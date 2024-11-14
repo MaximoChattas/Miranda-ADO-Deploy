@@ -18,11 +18,22 @@ function UpdateHotel() {
     const { loggedIn } = useContext(LoginContext);
     const { userProfile } = useContext(UserProfileContext);
 
+    const [baseURL, setBaseURL] = useState('');
     const [error, setError] = useState('');
 
     const navigate = useNavigate();
 
-    const baseURL = import.meta.env.VITE_base_url
+    useEffect(() => {
+        fetch('/config.json')
+            .then(response => response.json())
+            .then(data => {
+                setBaseURL(data.apiUrl);
+            })
+            .catch(error => {
+                console.error('Error loading config:', error);
+                setError('Failed to load configuration');
+            });
+    }, []);
 
     useEffect(() => {
         const fetchHotelDetails = async () => {
@@ -49,11 +60,16 @@ function UpdateHotel() {
         };
 
         fetchHotelDetails();
-    }, [id]);
+    }, [id, baseURL]);
 
     const handleUpdateHotel = async (e) => {
         e.preventDefault();
         setError('');
+
+        if (!baseURL) {
+            console.error('Base URL not set');
+            return;
+        }
 
         try {
             if (!name || !street_name || !street_number || !room_amount || !rate) {
@@ -115,7 +131,7 @@ function UpdateHotel() {
         };
 
         fetchAmenities();
-    }, []);
+    }, [baseURL]);
 
     if (!loggedIn || userProfile.role !== 'Admin') {
         return (

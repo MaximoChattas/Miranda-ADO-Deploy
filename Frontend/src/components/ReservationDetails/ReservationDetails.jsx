@@ -13,41 +13,54 @@ const ReservationDetails = () => {
   const [hotel, setHotel] = useState(null);
   const [error, setError] = useState(null);
   const [deleteError, setDeleteError] = useState(null)
+  const [baseURL, setBaseURL] = useState('');
   const [limitDate, setLimitDate] = useState(new Date())
 
   const { userProfile } = useContext(UserProfileContext);
   const navigate = useNavigate()
 
-  const baseURL = import.meta.env.VITE_base_url
+  useEffect(() => {
+    fetch('/config.json')
+        .then(response => response.json())
+        .then(data => {
+          setBaseURL(data.apiUrl);
+        })
+        .catch(error => {
+          console.error('Error loading config:', error);
+          setError('Failed to load configuration');
+        });
+  }, []);
 
   useEffect(() => {
     const fetchReservationDetails = async () => {
-      try {
-        const response = await fetch(`${baseURL}/reservation/${id}`);
-        if (response.ok) {
-          const data = await response.json();
-          setReservation(data);
+      if (baseURL) {
+        try {
+          const response = await fetch(`${baseURL}/reservation/${id}`);
+          if (response.ok) {
+            const data = await response.json();
+            setReservation(data);
 
-          const hotelResponse = await fetch(`${baseURL}/hotel/${data.hotel_id}`);
-          if (hotelResponse.ok) {
-            const hotelData = await hotelResponse.json();
-            setHotel(hotelData);
+            const hotelResponse = await fetch(`${baseURL}/hotel/${data.hotel_id}`);
+            if (hotelResponse.ok) {
+              const hotelData = await hotelResponse.json();
+              setHotel(hotelData);
+            } else {
+              const errorData = await hotelResponse.json();
+              throw new Error(errorData.error);
+            }
+
           } else {
-            const errorData = await hotelResponse.json();
+            const errorData = await response.json();
             throw new Error(errorData.error);
           }
-
-        } else {
-          const errorData = await response.json();
-          throw new Error(errorData.error);
+        } catch (error) {
+          setError(error.message);
         }
-      } catch (error) {
-        setError(error.message);
       }
     };
 
     fetchReservationDetails();
-  }, [id]);
+  }, [id, baseURL]);
 
   const isReservationDeletable = () => {
 
@@ -63,18 +76,20 @@ const ReservationDetails = () => {
   };
 
   const handleDeleteReservation = async () => {
-    try {
-      const response = await fetch(`${baseURL}/reservation/${id}`, {
-        method: 'DELETE',
-      });
-      if (response.ok) {
-        navigate(`/user/reservations/${userProfile.id}`)
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.error);
+    if (baseURL) {
+      try {
+        const response = await fetch(`${baseURL}/reservation/${id}`, {
+          method: 'DELETE',
+        });
+        if (response.ok) {
+          navigate(`/user/reservations/${userProfile.id}`)
+        } else {
+          const errorData = await response.json();
+          throw new Error(errorData.error);
+        }
+      } catch (error) {
+        setDeleteError(error.message);
       }
-    } catch (error) {
-      setDeleteError(error.message);
     }
   };
 

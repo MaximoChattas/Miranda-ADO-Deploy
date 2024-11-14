@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
 import Navbar from '../NavBar/NavBar';
-import './Login.css'
+import './Login.css';
 import { LoginContext, UserProfileContext } from '../../App';
 
 function Login() {
@@ -10,28 +10,39 @@ function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [baseURL, setBaseURL] = useState('');
   const navigate = useNavigate();
 
   const { loggedIn, setLoggedIn } = useContext(LoginContext);
   const { userProfile, setUserProfile } = useContext(UserProfileContext);
 
-  const baseURL = import.meta.env.VITE_base_url
-
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userProfileData = localStorage.getItem('userProfile');
-  
+
     if (token && userProfileData) {
       setLoggedIn(true);
       setUserProfile(JSON.parse(userProfileData));
     }
   }, []);
-  
+
+  useEffect(() => {
+    fetch('/config.json')
+        .then(response => response.json())
+        .then(data => {
+          setBaseURL(data.apiUrl);
+        })
+        .catch(error => {
+          console.error('Error loading config:', error);
+          setError('Failed to load configuration');
+        });
+  }, []);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-  
+
     try {
       const response = await fetch(`${baseURL}/login`, {
         method: 'POST',
@@ -40,7 +51,7 @@ function Login() {
         },
         body: JSON.stringify({ email, password }),
       });
-  
+
       if (response.status === 202) {
         const { token, user } = await response.json();
         localStorage.setItem('token', token);
@@ -62,44 +73,44 @@ function Login() {
   };
 
   return (
-    <LoginContext.Provider value={{ loggedIn, setLoggedIn }}>
-    <UserProfileContext.Provider value={{ userProfile, setUserProfile }}>
-      <>
-        <Navbar />
-        <div className="contenedorLogin">
-          <div>
-              <h2>Inicio de Sesion</h2>
-              <form onSubmit={handleLogin}>
-                <div>
-                  <label>Email:</label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label>Clave:</label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-                {error && <p className="error-message">{error}</p>}
-                <button type="submit" disabled={loading}>
-                  {loading ? 'Cargando...' : 'Iniciar Sesion'}
-                </button>
-              </form>
+      <LoginContext.Provider value={{ loggedIn, setLoggedIn }}>
+        <UserProfileContext.Provider value={{ userProfile, setUserProfile }}>
+          <>
+            <Navbar />
+            <div className="contenedorLogin">
+              <div>
+                <h2>Inicio de Sesion</h2>
+                <form onSubmit={handleLogin}>
+                  <div>
+                    <label>Email:</label>
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label>Clave:</label>
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                  </div>
+                  {error && <p className="error-message">{error}</p>}
+                  <button type="submit" disabled={loading}>
+                    {loading ? 'Cargando...' : 'Iniciar Sesion'}
+                  </button>
+                </form>
               </div>
               <div>
-              <p>¿Aun no tienes una cuenta?</p>
-              <button onClick={()=>navigate('/signup')}>Registrate</button>
+                <p>¿Aun no tienes una cuenta?</p>
+                <button onClick={() => navigate('/signup')}>Registrate</button>
+              </div>
             </div>
-        </div>
-      </>
-    </UserProfileContext.Provider>
-  </LoginContext.Provider>
+          </>
+        </UserProfileContext.Provider>
+      </LoginContext.Provider>
   );
 }
 

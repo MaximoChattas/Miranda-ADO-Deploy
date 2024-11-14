@@ -6,14 +6,24 @@ import './LoadAmenity.css';
 
 function LoadAmenity() {
     const [name, setName] = useState('');
+    const [baseURL, setBaseURL] = useState('');
+    const [error, setError] = useState('');
 
     const { loggedIn } = useContext(LoginContext);
     const { userProfile } = useContext(UserProfileContext);
-
-    const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const baseURL = import.meta.env.VITE_base_url
+    useEffect(() => {
+        fetch('/config.json')
+            .then(response => response.json())
+            .then(data => {
+                setBaseURL(data.apiUrl);
+            })
+            .catch(error => {
+                console.error('Error loading config:', error);
+                setError('Failed to load configuration');
+            });
+    }, []);
 
     const handleLoadAmenity = async (e) => {
         e.preventDefault();
@@ -22,6 +32,10 @@ function LoadAmenity() {
         try {
             if (!name) {
                 throw new Error('Complete todos los campos requeridos');
+            }
+
+            if (!baseURL) {
+                throw new Error('La URL base no está configurada');
             }
 
             const response = await fetch(`${baseURL}/amenity`, {
@@ -46,7 +60,6 @@ function LoadAmenity() {
             setError(error.message);
         }
     };
-
 
     if (!loggedIn || userProfile.role !== 'Admin') {
         return (

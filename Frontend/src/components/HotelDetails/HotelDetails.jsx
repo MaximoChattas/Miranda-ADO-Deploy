@@ -12,6 +12,7 @@ const HotelDetails = () => {
   const [error, setError] = useState(null);
   const [index, setIndex] = useState(0);
   const [deleteError, setDeleteError] = useState(null);
+  const [baseURL, setBaseURL] = useState('');
   const { userProfile } = useContext(UserProfileContext);
   const { loggedIn } = useContext(LoginContext);
   const [selectedDates, setSelectedDates] = useState({
@@ -20,26 +21,38 @@ const HotelDetails = () => {
   });
   const navigate = useNavigate();
 
-  const baseURL = import.meta.env.VITE_base_url
+  useEffect(() => {
+    fetch('/config.json')
+        .then(response => response.json())
+        .then(data => {
+          setBaseURL(data.apiUrl);
+        })
+        .catch(error => {
+          console.error('Error loading config:', error);
+          setError('Failed to load configuration');
+        });
+  }, []);
 
   useEffect(() => {
-    const fetchHotelDetails = async () => {
-      try {
-        const response = await fetch(`${baseURL}/hotel/${id}`);
-        if (response.ok) {
-          const data = await response.json();
-          setHotel(data);
-        } else {
-          const errorData = await response.json();
-          throw new Error(errorData.error);
+    if (baseURL) {
+      const fetchHotelDetails = async () => {
+        try {
+          const response = await fetch(`${baseURL}/hotel/${id}`);
+          if (response.ok) {
+            const data = await response.json();
+            setHotel(data);
+          } else {
+            const errorData = await response.json();
+            throw new Error(errorData.error);
+          }
+        } catch (error) {
+          setError(error.message);
         }
-      } catch (error) {
-        setError(error.message);
-      }
-    };
+      };
 
-    fetchHotelDetails();
-  }, [id]);
+      fetchHotelDetails();
+    }
+  }, [id, baseURL]);
 
   const handleSelectDates = (selectedRange) => {
     setSelectedDates(selectedRange);

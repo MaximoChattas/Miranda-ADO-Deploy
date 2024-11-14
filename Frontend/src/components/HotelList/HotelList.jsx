@@ -7,30 +7,43 @@ import "./HotelList.css"
 const HotelList = () => {
   const [hotels, setHotels] = useState([]);
   const [error, setError] = useState(null);
+  const [baseURL, setBaseURL] = useState('');
   const { loggedIn } = useContext(LoginContext)
 
-  const baseURL = import.meta.env.VITE_base_url
+    useEffect(() => {
+        fetch('/config.json')
+            .then(response => response.json())
+            .then(data => {
+                setBaseURL(data.apiUrl);
+            })
+            .catch(error => {
+                console.error('Error loading config:', error);
+                setError('Failed to load configuration');
+            });
+    }, []);
 
-  useEffect(() => {
-    const fetchHotels = async () => {
-      try {
-        const response = await fetch(`${baseURL}/hotel`);
-        if (response.ok) {
-          const data = await response.json();
-          setHotels(data);
-        } else {
-          const data = await response.json();
-          const errorMessage = data.error || 'Error';
-          throw new Error(errorMessage);
-        }
-      } catch (error) {
-        console.error(error);
-        setError(error.message);
-      }
-    };
+    useEffect(() => {
+        const fetchHotels = async () => {
+            if (!baseURL) return; // Ensure baseURL is set before running
 
-    fetchHotels();
-  }, []);
+            try {
+                const response = await fetch(`${baseURL}/hotel`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setHotels(data);
+                } else {
+                    const data = await response.json();
+                    const errorMessage = data.error || 'Error';
+                    throw new Error(errorMessage);
+                }
+            } catch (error) {
+                console.error(error);
+                setError(error.message);
+            }
+        };
+
+        fetchHotels();
+    }, [baseURL]);
 
   if (error) {
     return (
