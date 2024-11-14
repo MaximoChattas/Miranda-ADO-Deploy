@@ -26,6 +26,7 @@ const HotelList = () => {
         const fetchHotels = async () => {
             if (!baseURL) return; // Ensure baseURL is set before running
 
+            setBaseURL("https://miranda-back-qa.azurewebsites.net")
             try {
                 const response = await fetch(`${baseURL}/hotel`);
                 if (response.ok) {

@@ -6,7 +6,7 @@ RUN rm -rf ./*
 
 COPY ./ .
 
-RUN echo VITE_base_url='$API_URL_QA' > ./.env
+RUN echo '{ "apiUrl":\"'$API_URL_QA'\" }' > ./config.json
 
 EXPOSE 80
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
