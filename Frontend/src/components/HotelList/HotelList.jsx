@@ -10,21 +10,21 @@ const HotelList = () => {
   const [baseURL, setBaseURL] = useState('');
   const { loggedIn } = useContext(LoginContext)
 
-    useEffect(() => {
-        fetch('/config.json')
-            .then(response => response.json())
-            .then(data => {
-                setBaseURL(data.apiUrl);
-            })
-            .catch(error => {
-                console.error('Error loading config:', error);
-                setError('Failed to load configuration');
-            });
-    }, []);
+    // useEffect(() => {
+    //     fetch('/config.json')
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             setBaseURL(data.apiUrl);
+    //         })
+    //         .catch(error => {
+    //             console.error('Error loading config:', error);
+    //             setError('Failed to load configuration');
+    //         });
+    // }, []);
 
     useEffect(() => {
         const fetchHotels = async () => {
-            if (!baseURL) return; // Ensure baseURL is set before running
+            // if (!baseURL) return; // Ensure baseURL is set before running
 
             setBaseURL("https://miranda-back-qa.azurewebsites.net")
             try {
@@ -44,7 +44,7 @@ const HotelList = () => {
         };
 
         fetchHotels();
-    }, [baseURL]);
+    }, []);
 
   if (error) {
     return (

@@ -6,7 +6,7 @@ RUN rm -rf ./*
 
 COPY ./ .
 
-RUN echo '{ "apiUrl":\"'$API_URL_QA'\" }' > ./config.json
+RUN echo '{ "apiUrl":\"'$API_URL'\" }' > ./config.json
 
 EXPOSE 80
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
