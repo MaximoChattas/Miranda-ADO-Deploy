@@ -337,3 +337,6 @@ stages:
                 --container-registry-url https://$(acrLoginServer) \
                 --container-registry-user $(acrName) \
                 --container-registry-password $(az acr credential show --name $(acrName) --query "passwords[0].value" -o tsv)
+              # Set environment variables
+              az webapp config appsettings set --name $(frontAppServiceQA) --resource-group $(ResourceGroupName) \
+                --settings API_URL_QA="$(API_URL_QA)" \
