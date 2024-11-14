@@ -339,4 +339,4 @@ stages:
                 --container-registry-password $(az acr credential show --name $(acrName) --query "passwords[0].value" -o tsv)
               # Set environment variables
               az webapp config appsettings set --name $(frontAppServiceQA) --resource-group $(ResourceGroupName) \
-                --settings API_URL_QA="$(api_url_qa)" \
+                --settings VITE_base_url="$(api_url_qa)" \
