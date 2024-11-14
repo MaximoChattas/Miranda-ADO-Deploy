@@ -25,8 +25,8 @@ variables:
 
 # Azure App Services
   AppServicePlanLinux: 'MirandaASP'
-  backAppServiceQA: 'chattas-backend-qa'
-  frontAppServiceQA: 'chattas-frontend-qa'
+  backAppServiceQA: 'miranda-backend-qa'
+  frontAppServiceQA: 'miranda-frontend-qa'
 
 
 stages:
