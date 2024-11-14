@@ -23,28 +23,30 @@ const HotelList = () => {
     // }, []);
 
     useEffect(() => {
+        setBaseURL("https://miranda-back-qa.azurewebsites.net")
+    })
+    useEffect(() => {
         const fetchHotels = async () => {
-            // if (!baseURL) return; // Ensure baseURL is set before running
-
-            setBaseURL("https://miranda-back-qa.azurewebsites.net")
-            try {
-                const response = await fetch(`${baseURL}/hotel`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setHotels(data);
-                } else {
-                    const data = await response.json();
-                    const errorMessage = data.error || 'Error';
-                    throw new Error(errorMessage);
+            if (baseURL) {
+                try {
+                    const response = await fetch(`${baseURL}/hotel`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        setHotels(data);
+                    } else {
+                        const data = await response.json();
+                        const errorMessage = data.error || 'Error';
+                        throw new Error(errorMessage);
+                    }
+                } catch (error) {
+                    console.error(error);
+                    setError(error.message);
                 }
-            } catch (error) {
-                console.error(error);
-                setError(error.message);
             }
         };
 
         fetchHotels();
-    }, []);
+    }, [baseURL]);
 
   if (error) {
     return (
