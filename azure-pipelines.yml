@@ -25,7 +25,7 @@ variables:
 
 # Azure App Services
   AppServicePlanLinux: 'MirandaASP'
-  backAppServiceQA: 'miranda-backend-qa'
+  backAppServiceQA: 'miranda-back-qa'
   frontAppServiceQA: 'miranda-frontend-qa'
 
 
