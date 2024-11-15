@@ -8,4 +8,4 @@ COPY ./ .
 
 EXPOSE 80
 
-CMD ["/bin/sh", "-c", "echo '{ \"apiUrl\":\"https://miranda-back-qa.azurewebsites.net\" }' > /usr/share/nginx/html/config.json && nginx -g 'daemon off;'"]
+CMD ["/bin/sh", "-c", "echo '{ \"apiUrl\":\"'$API_URL'\" }' > /usr/share/nginx/html/config.json && nginx -g 'daemon off;'"]
