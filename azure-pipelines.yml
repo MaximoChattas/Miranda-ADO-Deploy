@@ -26,7 +26,9 @@ variables:
 # Azure App Services
   AppServicePlanLinux: 'MirandaASP'
   backAppServiceQA: 'miranda-back-qa'
+  backAppServiceProd: 'miranda-back-prod'
   frontAppServiceQA: 'miranda-frontend-qa'
+  frontAppServiceProd: 'miranda-frontend-prod'
 
 
 stages:
@@ -365,3 +367,87 @@ stages:
             searchFolder: '$(frontPath)/cypress/results'
             testRunTitle: 'Cypress App Services Tests'
             failTaskOnFailedTests: true
+
+# -------------------------------------------------------------------------------
+# |     STAGE DEPLOY FRONTEND AND BACKEND TO AZURE APP SERVICES PROD             |
+# -------------------------------------------------------------------------------
+- stage: DeployImagesToAppServiceProd
+  displayName: 'Deploy Docker Images to Azure App Service (Prod)'
+  dependsOn: DeployImagesToAppServiceQA
+  condition: succeeded()
+  jobs:
+# -------------------------------------------------------------------------------
+# |               DEPLOY API TO AZURE APP SERVICE                               |
+# -------------------------------------------------------------------------------
+    - deployment: DeployAPIImageToAppServiceProd
+      displayName: 'Deploy API to Azure App Service (Prod)'
+      pool:
+        vmImage: 'ubuntu-latest'
+      environment: 'prod'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: AzureCLI@2
+                displayName: 'Create API Azure App Service resource and configure image'
+                inputs:
+                  azureSubscription: '$(ConnectedServiceName)'
+                  scriptType: 'bash'
+                  scriptLocation: 'inlineScript'
+                  inlineScript: |
+                    # Check if API App Service already exists
+                    if ! az webapp list --query "[?name=='$(backAppServiceProd)' && resourceGroup=='$(ResourceGroupName)'] | length(@)" -o tsv | grep -q '^1$'; then
+                      echo "API App Service doesn't exist. Creating new..."
+                      # Create App Service without specifying container image
+                      az webapp create --resource-group $(ResourceGroupName) --plan $(AppServicePlanLinux) --name $(backAppServiceProd) --deployment-container-image-name "nginx"  # Especifica una imagen temporal para permitir la creación
+                    else
+                      echo "API App Service already exists. Updating image..."
+                    fi
+
+                    # Configure App Service to use Azure Container Registry (ACR)
+                    az webapp config container set --name $(backAppServiceProd) --resource-group $(ResourceGroupName) \
+                      --container-image-name $(acrLoginServer)/$(backImageName):$(backImageTag) \
+                      --container-registry-url https://$(acrLoginServer) \
+                      --container-registry-user $(acrName) \
+                      --container-registry-password $(az acr credential show --name $(acrName) --query "passwords[0].value" -o tsv)
+                    # Set environment variables
+                    az webapp config appsettings set --name $(backAppServiceProd) --resource-group $(ResourceGroupName) \
+                      --settings DBCONNSTRING="$(connection_string_qa)" \ # Modificar luego de crear DB de Prod
+
+# -------------------------------------------------------------------------------
+# |               DEPLOY FRONTEND TO AZURE APP SERVICE                           |
+# -------------------------------------------------------------------------------
+    - deployment: DeployFrontImageToAppServiceProd
+      displayName: 'Deploy Front to Azure App Service (Prod)'
+      pool:
+        vmImage: 'ubuntu-latest'
+      environment: 'prod'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: AzureCLI@2
+                displayName: 'Create Front Azure App Service resource and configure image'
+                inputs:
+                  azureSubscription: '$(ConnectedServiceName)'
+                  scriptType: 'bash'
+                  scriptLocation: 'inlineScript'
+                  inlineScript: |
+                    # Check if Front App Service already exists
+                    if ! az webapp list --query "[?name=='$(frontAppServiceProd)' && resourceGroup=='$(ResourceGroupName)'] | length(@)" -o tsv | grep -q '^1$'; then
+                      echo "Front App Service doesn't exist. Creating new..."
+                      # Create App Service without specifying container image
+                      az webapp create --resource-group $(ResourceGroupName) --plan $(AppServicePlanLinux) --name $(frontAppServiceProd) --deployment-container-image-name "nginx"  # Especifica una imagen temporal para permitir la creación
+                    else
+                      echo "Front App Service already exists. Updating image..."
+                    fi
+
+                    # Configure App Service to use Azure Container Registry (ACR)
+                    az webapp config container set --name $(frontAppServiceProd) --resource-group $(ResourceGroupName) \
+                      --container-image-name $(acrLoginServer)/$(frontImageName):$(frontImageTag) \
+                      --container-registry-url https://$(acrLoginServer) \
+                      --container-registry-user $(acrName) \
+                      --container-registry-password $(az acr credential show --name $(acrName) --query "passwords[0].value" -o tsv)
+                    # Set environment variables
+                    az webapp config appsettings set --name $(frontAppServiceProd) --resource-group $(ResourceGroupName) \
+                      --settings API_URL="$(api_url_prod)" \
