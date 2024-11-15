@@ -1,7 +1,7 @@
 describe('hotel-test', () => {
 
-    const homeUrl = 'https://miranda-frontend-qa.azurewebsites.net'
-    const apiUrl = 'https://miranda-back-qa.azurewebsites.net'
+    const homeUrl = Cypress.env('homeUrl');
+    const apiUrl = Cypress.env('apiUrl');
     let createdHotel;
 
     beforeEach(() => {

@@ -353,7 +353,7 @@ stages:
           displayName: 'Install typescript'
           workingDirectory: '$(frontPath)'
 
-        - script: npx cypress run --env apiUrl=$(api_url_as_qa),homeUrl=$(front_url_as_qa)
+        - script: npx cypress run --env apiUrl=$(api_url_qa),homeUrl=$(front_url_qa)
           workingDirectory: '$(frontPath)'
           displayName: 'Run integration tests'
           continueOnError: true
