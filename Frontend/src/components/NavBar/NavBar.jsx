@@ -1,11 +1,21 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { LoginContext, UserProfileContext } from '../../App';
 import'./NavBar.css';
 
 function Navbar() {
-  const { loggedIn } = useContext(LoginContext);
-  const { userProfile } = useContext(UserProfileContext);
+  const { loggedIn, setLoggedIn } = useContext(LoginContext);
+  const { userProfile, setUserProfile } = useContext(UserProfileContext);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userProfileData = localStorage.getItem('userProfile');
+
+    if (token && userProfileData) {
+      setLoggedIn(true);
+      setUserProfile(JSON.parse(userProfileData));
+    }
+  }, []);
 
   return (
     <header>

@@ -1,8 +1,22 @@
 Cypress.Commands.add('loginAsAdmin', () => {
-    cy.get('[href="/login"] > .boton').click();
-    cy.get(':nth-child(1) > input').clear().type('maxichattas@gmail.com');
-    cy.get(':nth-child(2) > input').clear().type('admin');
-    cy.get('form > button').click();
+    cy.request({
+        method: 'POST',
+        url: Cypress.env('apiUrl') + '/login',
+        url: apiUrl + '/login',
+        body: {
+            email: 'maxichattas@gmail.com',
+            password: 'admin'
+        }
+    }).then((response) => {
+        if (response.status === 202) {
+            const { token, user } = response.body;
+            cy.log(JSON.stringify(response));
+            window.localStorage.setItem('token', token);
+            window.localStorage.setItem('userProfile', JSON.stringify(user));
+        } else {
+            throw new Error('Login failed during test setup');
+        }
+    });
 });
 
 describe('hotel-test', () => {
@@ -17,13 +31,7 @@ describe('hotel-test', () => {
 
     it('should display hotel admin panel when logged in as admin user', () => {
 
-        cy.intercept('GET', apiUrl+'/hotel', (req) => {
-            req.on('response', (res) => {
-                expect(res.statusCode).to.eq(200);
-            });
-        }).as('getHome');
         cy.loginAsAdmin();
-        cy.wait('@getHome');
 
         cy.intercept('GET', apiUrl+'/hotel/*', (req) => {
             req.on('response', (res) => {
@@ -52,13 +60,7 @@ describe('hotel-test', () => {
     });
 
     it('should fail to create hotel with empty fields', () => {
-        cy.intercept('GET', apiUrl+'/hotel', (req) => {
-            req.on('response', (res) => {
-                expect(res.statusCode).to.eq(200);
-            });
-        }).as('getHome');
         cy.loginAsAdmin();
-        cy.wait('@getHome');
         
         cy.get('[href="/profile"] > .boton').click();
         cy.get('.contenedorAdmin > :nth-child(2) > :nth-child(1)').click();
@@ -68,13 +70,7 @@ describe('hotel-test', () => {
     })
 
     it('should succeed to create hotel', () => {
-        cy.intercept('GET', apiUrl+'/hotel', (req) => {
-            req.on('response', (res) => {
-                expect(res.statusCode).to.eq(200);
-            });
-        }).as('getHome');
         cy.loginAsAdmin();
-        cy.wait('@getHome');
 
         cy.get('[href="/profile"] > .boton').click();
         cy.get('.contenedorAdmin > :nth-child(2) > :nth-child(1)').click();

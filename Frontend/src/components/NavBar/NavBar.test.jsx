@@ -8,6 +8,9 @@ import { BrowserRouter as Router } from "react-router-dom";
 describe('NavBar', () => {
 
     const renderWithContext = (loggedIn = true, userProfile = {id: 1, name: 'John'}) => {
+        localStorage.setItem('loggedIn', loggedIn);
+        localStorage.setItem('userProfile', JSON.stringify(userProfile));
+
         render(
             <UserProfileContext.Provider value={ {userProfile} }>
                 <LoginContext.Provider value={{ loggedIn }}>
@@ -18,6 +21,10 @@ describe('NavBar', () => {
             </UserProfileContext.Provider>
         );
     };
+
+    afterEach(() => {
+        localStorage.clear();
+    });
 
     it('should render the title', () => {
         renderWithContext();
