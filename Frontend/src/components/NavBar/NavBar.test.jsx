@@ -28,7 +28,7 @@ describe('NavBar', () => {
 
     it('should render the title', () => {
         renderWithContext();
-        expect(screen.getByText(/MIRANDA/i)).toBeInTheDocument();
+        expect(screen.getByText(/MIRANDA HOTELS/i)).toBeInTheDocument();
     });
 
     it('should render availability button', () => {
