@@ -4,14 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8094b6c0-0600-40bc-89d9-f6442fd856e8" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Backend/client/hotel.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/client/hotel.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/client/hotel_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/client/hotel_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/client/image.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/client/image.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/client/image_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/client/image_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/service/hotel.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/service/hotel.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/service/image_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/service/image_test.go" afterDir="false" />
-    </list>
+    <list default="true" id="8094b6c0-0600-40bc-89d9-f6442fd856e8" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
