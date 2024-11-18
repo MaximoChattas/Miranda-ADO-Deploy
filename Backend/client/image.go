@@ -13,6 +13,7 @@ type imageClientInterface interface {
 	GetImageById(id int) model.Image
 	GetImages() model.Images
 	GetImagesByHotelId(hotelId int) model.Images
+	DeleteImage(image model.Image) error
 }
 
 var ImageClient imageClientInterface
@@ -76,4 +77,16 @@ func (c imageClient) GetImagesByHotelId(hotelId int) model.Images {
 	log.Debug("Images: ", images)
 
 	return images
+}
+
+func (c imageClient) DeleteImage(image model.Image) error {
+
+	err := Db.Delete(&image).Error
+
+	if err != nil {
+		log.Debug("Failed to delete image")
+	} else {
+		log.Debug("Image deleted: ", image.Id)
+	}
+	return err
 }

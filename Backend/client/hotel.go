@@ -55,7 +55,6 @@ func (c hotelClient) GetHotels() model.Hotels {
 func (c hotelClient) DeleteHotel(hotel model.Hotel) error {
 
 	Db.Model(&hotel).Association("Amenities").Clear()
-	Db.Model(&hotel).Association("Images").Clear()
 
 	err := Db.Delete(&hotel).Error
 

@@ -200,6 +200,11 @@ func TestDeleteHotel_Client(t *testing.T) {
 	}
 
 	mock.ExpectBegin()
+	mock.ExpectExec(`DELETE FROM "hotel_amenities" WHERE "hotel_amenities"."hotel_id" = @p1`).
+		WithArgs(hotel.Id).WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	mock.ExpectBegin()
 	mock.ExpectExec(`DELETE FROM "hotels" WHERE "hotels"."id" = @p1`).
 		WithArgs(hotel.Id).WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()

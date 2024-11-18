@@ -249,3 +249,46 @@ func TestGetImagesByHotelId_Client(t *testing.T) {
 		t.Errorf("There were unfulfilled expectations: %v", err)
 	}
 }
+
+func TestDeleteImage_Client(t *testing.T) {
+	a := assert.New(t)
+
+	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	if err != nil {
+		t.Fatalf("Failed to create mock database")
+	}
+	defer db.Close()
+
+	gormDB, err := gorm.Open(sqlserver.New(sqlserver.Config{
+		DriverName: "sqlserver",
+		Conn:       db,
+	}), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
+	if err != nil {
+		t.Fatalf("Connection failed to open")
+	}
+
+	Db = gormDB
+	ImageClient = &imageClient{}
+
+	image := model.Image{
+		Id:      1,
+		Path:    "Images/1-1.jpg",
+		HotelId: 1,
+	}
+
+	mock.ExpectBegin()
+	mock.ExpectExec(`DELETE FROM "images" WHERE "images"."id" = @p1`).
+		WithArgs(image.Id).WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	err = ImageClient.DeleteImage(image)
+
+	a.Nil(err)
+
+	// Check that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("There were unfulfilled expectations: %v", err)
+	}
+}

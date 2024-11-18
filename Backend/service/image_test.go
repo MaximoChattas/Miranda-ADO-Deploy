@@ -62,6 +62,8 @@ func (t TestImage) GetImagesByHotelId(hotelId int) model.Images {
 	return model.Images{}
 }
 
+func (t TestImage) DeleteImage(image model.Image) error { return nil }
+
 func TestInsertImages_Service_Error(t *testing.T) {
 
 	a := assert.New(t)

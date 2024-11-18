@@ -195,6 +195,14 @@ func (s *hotelService) DeleteHotel(id int) error {
 		return errors.New("hotel not found")
 	}
 
+	for _, image := range hotel.Images {
+		err := client.ImageClient.DeleteImage(image)
+
+		if err != nil {
+			return err
+		}
+	}
+
 	err := client.HotelClient.DeleteHotel(hotel)
 
 	return err
