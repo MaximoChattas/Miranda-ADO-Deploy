@@ -1,3 +1,10 @@
+Cypress.Commands.add('loginAsAdmin', () => {
+    cy.get('[href="/login"] > .boton').click();
+    cy.get(':nth-child(1) > input').clear().type('maxichattas@gmail.com');
+    cy.get(':nth-child(2) > input').clear().type('admin');
+    cy.get('form > button').click();
+});
+
 describe('hotel-test', () => {
 
     const homeUrl = Cypress.env('homeUrl');
@@ -9,20 +16,13 @@ describe('hotel-test', () => {
     });
 
     it('should display hotel admin panel when logged in as admin user', () => {
-        // Login as admin user
-        cy.get('[href="/login"] > .boton').click();
-        cy.get(':nth-child(1) > input').clear();
-        cy.get(':nth-child(1) > input').type('maxichattas@gmail.com');
-        cy.get(':nth-child(2) > input').clear();
-        cy.get(':nth-child(2) > input').type('admin');
 
         cy.intercept('GET', apiUrl+'/hotel', (req) => {
             req.on('response', (res) => {
-                // Ensure response status is 200
                 expect(res.statusCode).to.eq(200);
             });
         }).as('getHome');
-        cy.get('form > button').click();
+        cy.loginAsAdmin();
         cy.wait('@getHome');
 
         cy.intercept('GET', apiUrl+'/hotel/*', (req) => {
@@ -39,10 +39,8 @@ describe('hotel-test', () => {
     });
 
     it('should not display hotel admin panel when not logged in as admin user', () => {
-
         cy.intercept('GET', apiUrl+'/hotel/*', (req) => {
             req.on('response', (res) => {
-                // Ensure response status is 200
                 expect(res.statusCode).to.eq(200);
             });
         }).as('getHotel');
@@ -54,29 +52,29 @@ describe('hotel-test', () => {
     });
 
     it('should fail to create hotel with empty fields', () => {
-        // Login as admin user
-        cy.get('[href="/login"] > .boton').click();
-        cy.get(':nth-child(1) > input').clear();
-        cy.get(':nth-child(1) > input').type('maxichattas@gmail.com');
-        cy.get(':nth-child(2) > input').clear();
-        cy.get(':nth-child(2) > input').type('admin');
-        cy.get('form > button').click();
-        /* ==== Generated with Cypress Studio ==== */
+        cy.intercept('GET', apiUrl+'/hotel', (req) => {
+            req.on('response', (res) => {
+                expect(res.statusCode).to.eq(200);
+            });
+        }).as('getHome');
+        cy.loginAsAdmin();
+        cy.wait('@getHome');
+        
         cy.get('[href="/profile"] > .boton').click();
         cy.get('.contenedorAdmin > :nth-child(2) > :nth-child(1)').click();
         cy.get('form > button').click();
         cy.get('.error-message').should('have.text', 'Complete todos los campos requeridos');
-        /* ==== End Cypress Studio ==== */
+        
     })
 
     it('should succeed to create hotel', () => {
-        // Login as admin user
-        cy.get('[href="/login"] > .boton').click();
-        cy.get(':nth-child(1) > input').clear();
-        cy.get(':nth-child(1) > input').type('maxichattas@gmail.com');
-        cy.get(':nth-child(2) > input').clear();
-        cy.get(':nth-child(2) > input').type('admin');
-        cy.get('form > button').click();
+        cy.intercept('GET', apiUrl+'/hotel', (req) => {
+            req.on('response', (res) => {
+                expect(res.statusCode).to.eq(200);
+            });
+        }).as('getHome');
+        cy.loginAsAdmin();
+        cy.wait('@getHome');
 
         cy.get('[href="/profile"] > .boton').click();
         cy.get('.contenedorAdmin > :nth-child(2) > :nth-child(1)').click();
@@ -98,15 +96,11 @@ describe('hotel-test', () => {
 
         cy.get('textarea').click();
 
-        // Set up intercept for hotel creation before submitting
         cy.intercept('POST', apiUrl+'/hotel').as('createHotel');
-
         cy.get('form > button').click();
-
-        // Wait for the request and capture the response
         cy.wait('@createHotel').then((interception) => {
             createdHotel = interception.response.body;
-            expect(interception.response.statusCode).to.eq(201); // Check if creation was successful
+            expect(interception.response.statusCode).to.eq(201);
             cy.wrap(createdHotel).as('createdHotel');
         });
 
