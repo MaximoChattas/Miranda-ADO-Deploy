@@ -17,18 +17,32 @@ describe('hotel-test', () => {
         cy.get(':nth-child(2) > input').type('admin');
         cy.get('form > button').click();
 
-        /* ==== Generated with Cypress Studio ==== */
+        cy.intercept('GET', apiUrl+'/hotel/*', (req) => {
+            req.on('response', (res) => {
+                // Ensure response status is 200
+                expect(res.statusCode).to.eq(200);
+            });
+        }).as('getHotel');
         cy.get(':nth-child(1) > .card > .card-body > .card-title > a').click();
+        cy.wait('@getHotel');
+
         cy.get('.description > :nth-child(7)').should('be.visible');
-        /* ==== End Cypress Studio ==== */
+        
     });
 
     it('should not display hotel admin panel when not logged in as admin user', () => {
 
-        /* ==== Generated with Cypress Studio ==== */
+        cy.intercept('GET', apiUrl+'/hotel/*', (req) => {
+            req.on('response', (res) => {
+                // Ensure response status is 200
+                expect(res.statusCode).to.eq(200);
+            });
+        }).as('getHotel');
         cy.get(':nth-child(1) > .card > .card-body > .card-title > a').click();
+        cy.wait('@getHotel');
+
         cy.get('.description > :nth-child(7)').should('not.exist');
-        /* ==== End Cypress Studio ==== */
+        
     });
 
     it('should fail to create hotel with empty fields', () => {
