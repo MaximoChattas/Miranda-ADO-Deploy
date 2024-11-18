@@ -118,6 +118,21 @@ stages:
       inputs:
        versionSpec: '22.x'
       displayName: 'Install Node.js'
+    
+    - script: |
+        npm install vite@latest @vitejs/plugin-react@latest
+        npm install -D vitest jsdom @testing-library/react @testing-library/jest-dom @testing-library/user-event
+        npx vitest run --reporter junit --outputFile=./test-result.xml  
+      workingDirectory: '$(frontPath)'
+      displayName: 'Run frontend tests and generate test report'
+
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '$(frontPath)/test-results.xml'
+        failTaskOnFailedTests: true
+      displayName: 'Publish frontend test results'
+      condition: always()
 
     - script: |
        npm install
