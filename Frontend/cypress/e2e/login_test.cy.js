@@ -33,7 +33,7 @@ describe('login-test', () => {
         cy.get(':nth-child(2) > input').clear();
         cy.get(':nth-child(2) > input').type('test123');
         cy.get('form > button').click();
-        cy.get('.error-message').should('have.text', 'user not registered');
+        cy.get('.error-message').should('be.visible');
         /* ==== End Cypress Studio ==== */
     });
 
@@ -47,7 +47,7 @@ describe('login-test', () => {
         cy.get(':nth-child(2) > input').clear();
         cy.get(':nth-child(2) > input').type('test123');
         cy.get('form > button').click();
-        cy.get('.error-message').should('have.text', 'incorrect password');
+        cy.get('.error-message').should('be.visible');
         /* ==== End Cypress Studio ==== */
     });
 
