@@ -53,6 +53,10 @@ func (c hotelClient) GetHotels() model.Hotels {
 }
 
 func (c hotelClient) DeleteHotel(hotel model.Hotel) error {
+
+	Db.Model(&hotel).Association("Amenities").Clear()
+	Db.Model(&hotel).Association("Images").Clear()
+
 	err := Db.Delete(&hotel).Error
 
 	if err != nil {
@@ -64,8 +68,6 @@ func (c hotelClient) DeleteHotel(hotel model.Hotel) error {
 }
 
 func (c hotelClient) UpdateHotel(hotel model.Hotel) model.Hotel {
-
-	//Db.Model(&hotel).Association("Amenities").Clear()
 
 	var newAmenities model.Amenities
 
