@@ -2,7 +2,6 @@ Cypress.Commands.add('loginAsAdmin', () => {
     cy.request({
         method: 'POST',
         url: Cypress.env('apiUrl') + '/login',
-        url: apiUrl + '/login',
         body: {
             email: 'maxichattas@gmail.com',
             password: 'admin'
@@ -17,6 +16,16 @@ Cypress.Commands.add('loginAsAdmin', () => {
             throw new Error('Login failed during test setup');
         }
     });
+
+    cy.get('[href="/login"] > .boton').click();
+
+    cy.intercept('GET', apiUrl+'/hotel', (req) => {
+        req.on('response', (res) => {
+            expect(res.statusCode).to.eq(200);
+        });
+    }).as('getHomepage');
+    cy.get('.asd').click();
+    cy.wait('@getHomepage');
 });
 
 describe('hotel-test', () => {
@@ -30,7 +39,6 @@ describe('hotel-test', () => {
     });
 
     it('should display hotel admin panel when logged in as admin user', () => {
-
         cy.loginAsAdmin();
 
         cy.intercept('GET', apiUrl+'/hotel/*', (req) => {
@@ -43,7 +51,6 @@ describe('hotel-test', () => {
         cy.wait('@getHotel');
 
         cy.get('.description > :nth-child(7)').should('be.visible');
-        
     });
 
     it('should not display hotel admin panel when not logged in as admin user', () => {
@@ -102,7 +109,6 @@ describe('hotel-test', () => {
 
         cy.intercept('GET', homeUrl, (req) => {
             req.on('response', (res) => {
-                // Ensure response status is 200
                 expect(res.statusCode).to.eq(200);
             });
         }).as('getHomepage');
@@ -125,7 +131,7 @@ describe('hotel-test', () => {
     after(() => {
         cy.request({
             method: 'DELETE',
-            url: `${apiUrl}/hotel/${createdHotel.id}`, // Replace with the correct URL structure
+            url: `${apiUrl}/hotel/${createdHotel.id}`,
         }).then((response) => {
             expect(response.status).to.eq(200); // Confirm deletion was successful
         });
