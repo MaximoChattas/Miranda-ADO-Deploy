@@ -1,33 +1,3 @@
-Cypress.Commands.add('loginAsAdmin', () => {
-    cy.request({
-        method: 'POST',
-        url: Cypress.env('apiUrl') + '/login',
-        body: {
-            email: 'maxichattas@gmail.com',
-            password: 'admin'
-        }
-    }).then((response) => {
-        if (response.status === 202) {
-            const { token, user } = response.body;
-            cy.log(JSON.stringify(response));
-            window.localStorage.setItem('token', token);
-            window.localStorage.setItem('userProfile', JSON.stringify(user));
-        } else {
-            throw new Error('Login failed during test setup');
-        }
-    });
-
-    cy.get('[href="/login"] > .boton').click();
-
-    cy.intercept('GET', apiUrl+'/hotel', (req) => {
-        req.on('response', (res) => {
-            expect(res.statusCode).to.eq(200);
-        });
-    }).as('getHomepage');
-    cy.get('.asd').click();
-    cy.wait('@getHomepage');
-});
-
 describe('hotel-test', () => {
 
     const homeUrl = Cypress.env('homeUrl');
@@ -38,8 +8,39 @@ describe('hotel-test', () => {
         cy.visit(homeUrl)
     });
 
+    const loginAsAdmin = () => {
+        return cy.request({
+            method: 'POST',
+            url: `${apiUrl}/login`,
+            body: {
+                email: 'maxichattas@gmail.com',
+                password: 'admin'
+            }
+        }).then((response) => {
+            if (response.status === 202) {
+                const { token, user } = response.body;
+                cy.log(JSON.stringify(response));
+                window.localStorage.setItem('token', token);
+                window.localStorage.setItem('userProfile', JSON.stringify(user));
+            } else {
+                throw new Error('Login failed during test setup');
+            }
+        });
+    };
+
+
     it('should display hotel admin panel when logged in as admin user', () => {
-        cy.loginAsAdmin();
+        loginAsAdmin();
+
+        cy.get('[href="/login"] > .boton').click();
+
+        cy.intercept('GET', apiUrl+'/hotel', (req) => {
+            req.on('response', (res) => {
+                expect(res.statusCode).to.eq(200);
+            });
+        }).as('getHomepage');
+        cy.get('.asd').click();
+        cy.wait('@getHomepage');
 
         cy.intercept('GET', apiUrl+'/hotel/*', (req) => {
             req.on('response', (res) => {
@@ -67,7 +68,17 @@ describe('hotel-test', () => {
     });
 
     it('should fail to create hotel with empty fields', () => {
-        cy.loginAsAdmin();
+        loginAsAdmin();
+
+        cy.get('[href="/login"] > .boton').click();
+        
+        cy.intercept('GET', apiUrl+'/hotel', (req) => {
+            req.on('response', (res) => {
+                expect(res.statusCode).to.eq(200);
+            });
+        }).as('getHomepage');
+        cy.get('.asd').click();
+        cy.wait('@getHomepage');
         
         cy.get('[href="/profile"] > .boton').click();
         cy.get('.contenedorAdmin > :nth-child(2) > :nth-child(1)').click();
@@ -77,7 +88,17 @@ describe('hotel-test', () => {
     })
 
     it('should succeed to create hotel', () => {
-        cy.loginAsAdmin();
+        loginAsAdmin();
+
+        cy.get('[href="/login"] > .boton').click();
+        
+        cy.intercept('GET', apiUrl+'/hotel', (req) => {
+            req.on('response', (res) => {
+                expect(res.statusCode).to.eq(200);
+            });
+        }).as('getHomepage');
+        cy.get('.asd').click();
+        cy.wait('@getHomepage');
 
         cy.get('[href="/profile"] > .boton').click();
         cy.get('.contenedorAdmin > :nth-child(2) > :nth-child(1)').click();
