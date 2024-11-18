@@ -122,7 +122,7 @@ stages:
     - script: |
         npm install vite@latest @vitejs/plugin-react@latest
         npm install -D vitest jsdom @testing-library/react @testing-library/jest-dom @testing-library/user-event
-        npx vitest run --reporter junit --outputFile=./test-result.xml  
+        npx vitest run --reporter junit --outputFile=./test-results.xml  
       workingDirectory: '$(frontPath)'
       displayName: 'Run frontend tests and generate test report'
 

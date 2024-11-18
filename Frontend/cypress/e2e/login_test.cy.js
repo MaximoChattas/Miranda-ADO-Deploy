@@ -60,7 +60,16 @@ describe('login-test', () => {
         cy.get(':nth-child(1) > input').type('test@test.com');
         cy.get(':nth-child(2) > input').clear();
         cy.get(':nth-child(2) > input').type('test');
+
+        cy.intercept('GET', apiUrl+'/hotel', (req) => {
+            req.on('response', (res) => {
+                // Ensure response status is 200
+                expect(res.statusCode).to.eq(200);
+            });
+        }).as('getHome');
         cy.get('form > button').click();
+        cy.wait('@getHome');
+
         cy.get('[href="/profile"] > .boton').should('have.text', 'Hola test name');
         /* ==== End Cypress Studio ==== */
     });
