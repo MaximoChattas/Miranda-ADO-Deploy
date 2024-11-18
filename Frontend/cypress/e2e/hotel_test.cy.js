@@ -15,7 +15,15 @@ describe('hotel-test', () => {
         cy.get(':nth-child(1) > input').type('maxichattas@gmail.com');
         cy.get(':nth-child(2) > input').clear();
         cy.get(':nth-child(2) > input').type('admin');
+
+        cy.intercept('GET', apiUrl+'/hotel', (req) => {
+            req.on('response', (res) => {
+                // Ensure response status is 200
+                expect(res.statusCode).to.eq(200);
+            });
+        }).as('getHome');
         cy.get('form > button').click();
+        cy.wait('@getHome');
 
         cy.intercept('GET', apiUrl+'/hotel/*', (req) => {
             req.on('response', (res) => {
