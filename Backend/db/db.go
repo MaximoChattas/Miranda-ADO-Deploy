@@ -2,11 +2,12 @@ package db
 
 import (
 	"os"
+	//"os"
 	"project/client"
 	"project/model"
 
 	log "github.com/sirupsen/logrus"
-	"gorm.io/driver/sqlserver"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
@@ -19,7 +20,7 @@ func init() {
 
 	dsn := os.Getenv("DBCONNSTRING")
 
-	Db, err = gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
+	Db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {
 		log.Info("Connection Failed to Open")

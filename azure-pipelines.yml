@@ -435,7 +435,7 @@ stages:
                       --container-registry-password $(az acr credential show --name $(acrName) --query "passwords[0].value" -o tsv)
                     # Set environment variables
                     az webapp config appsettings set --name $(backAppServiceProd) --resource-group $(ResourceGroupName) \
-                      --settings DBCONNSTRING="$(connection_string_qa)" \
+                      --settings DBCONNSTRING="$(connection_string_prod)" \
 
 # -------------------------------------------------------------------------------
 # |               DEPLOY FRONTEND TO AZURE APP SERVICE                           |
