@@ -2,7 +2,6 @@ package db
 
 import (
 	"os"
-	//"os"
 	"project/client"
 	"project/model"
 
