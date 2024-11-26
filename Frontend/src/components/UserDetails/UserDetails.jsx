@@ -28,17 +28,19 @@ const UserDetails = () => {
 
   useEffect(() => {
     const fetchUserDetails = async () => {
-      try {
-        const response = await fetch(`${baseURL}/user/${id}`);
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data);
-        } else {
-          const errorData = await response.json();
-          throw new Error(errorData.error);
+      if (baseURL) {
+        try {
+          const response = await fetch(`${baseURL}/user/${id}`);
+          if (response.ok) {
+            const data = await response.json();
+            setUser(data);
+          } else {
+            const errorData = await response.json();
+            throw new Error(errorData.error);
+          }
+        } catch (error) {
+          setError(error.message);
         }
-      } catch (error) {
-        setError(error.message);
       }
     };
 
