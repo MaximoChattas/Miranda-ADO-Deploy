@@ -21,7 +21,7 @@ function Navbar() {
     <header>
       <div className="container">
         <NavLink className="nav-link" to="/">
-          <h1 className="asd">MIRANDA</h1>
+          <h1 className="asd">MIRANDA HOTELS</h1>
         </NavLink>
         <div className="contenedorBotones">
            <NavLink className="nav-link" to="/hotel/availability">
