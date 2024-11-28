@@ -19,9 +19,9 @@ variables:
   acrLoginServer: "$(acrName).azurecr.io"
   acrName: 'MirandaHotelsACR'
   backImageName: 'miranda-go-api'
-  backImageTag: 'latest'
+  backImageTag: '$(Build.BuildId)'
   frontImageName: 'miranda-react-app'
-  frontImageTag: 'latest'
+  frontImageTag: '$(Build.BuildId)'
 
 # Azure App Services
   AppServicePlanLinux: 'MirandaASP'
