@@ -224,7 +224,7 @@ stages:
           inputs:
             command: push
             repository: $(acrLoginServer)/$(backImageName)
-            tags: 'latest'
+            tags: '$(backImageTag)'
 
 # -------------------------------------------------------------------------------
 # |                        BUILD AND PUSH FRONT                                 |
@@ -278,7 +278,7 @@ stages:
           inputs:
             command: push
             repository: $(acrLoginServer)/$(frontImageName)
-            tags: 'latest'
+            tags: '$(frontImageTag)'
 
 # -------------------------------------------------------------------------------
 # |     STAGE DEPLOY FRONTEND AND BACKEND TO AZURE APP SERVICES QA              |
