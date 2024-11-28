@@ -40,6 +40,14 @@ describe('hotel-test', () => {
     });
 
     it('should not display hotel admin panel when not logged in as admin user', () => {
+        cy.intercept('GET', apiUrl+'/hotel', (req) => {
+            req.on('response', (res) => {
+                expect(res.statusCode).to.eq(200);
+            });
+        }).as('getHomepage');
+        cy.visit(homeUrl)
+        cy.wait('@getHomepage');
+
         cy.intercept('GET', apiUrl+'/hotel/*', (req) => {
             req.on('response', (res) => {
                 expect(res.statusCode).to.eq(200);
